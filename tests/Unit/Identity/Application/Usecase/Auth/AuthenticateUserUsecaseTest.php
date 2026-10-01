@@ -5,7 +5,7 @@ declare(strict_types=1);
 use src\Identity\Application\DTO\Auth\AuthenticateUserInputDTO;
 use src\Identity\Application\DTO\Auth\AuthenticateUserOutputDTO;
 use src\Identity\Application\Exception\InvalidCredentialsException;
-use src\Identity\Application\Interfaces\Auth\AuthenticateUserUsecaseInterface;
+use src\Identity\Application\Interfaces\Usecase\Auth\AuthenticateUserUsecaseInterface;
 use src\Identity\Application\Usecase\Auth\AuthenticateUserUsecase;
 use src\Identity\Domain\Entity\UserEntity;
 use src\Identity\Domain\Enum\UserRoleEnum;

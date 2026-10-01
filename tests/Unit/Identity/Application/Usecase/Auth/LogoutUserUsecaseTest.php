@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use src\Identity\Application\DTO\Auth\LogoutUserInputDTO;
 use src\Identity\Application\Exception\InvalidCredentialsException;
-use src\Identity\Application\Interfaces\Auth\LogoutUserUsecaseInterface;
+use src\Identity\Application\Interfaces\Usecase\Auth\LogoutUserUsecaseInterface;
 use src\Identity\Application\Usecase\Auth\LogoutUserUsecase;
 use src\Identity\Domain\Repository\UserRepositoryInterface;
 
