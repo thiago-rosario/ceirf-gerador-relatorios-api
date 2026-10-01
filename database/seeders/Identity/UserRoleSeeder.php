@@ -10,7 +10,7 @@ class UserRoleSeeder extends Seeder
     public function run(): void
     {
         DB::table('roles')->upsert([
-            ['code' => 'report_author', 'name' => 'Autor de relatório'],
+            ['code' => 'operator', 'name' => 'Operador'],
             ['code' => 'reviewer', 'name' => 'Revisor'],
             ['code' => 'super_user', 'name' => 'Superusuário'],
             ['code' => 'viewer', 'name' => 'Visualizador'],
