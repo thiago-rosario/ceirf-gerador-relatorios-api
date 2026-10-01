@@ -9,6 +9,12 @@ use src\Shared\Contract\PaginationInterface;
 
 interface UserRepositoryInterface
 {
+    public function authenticate(string $email, string $password): ?UserEntity;
+
+    public function createAccessToken(UserEntity $user): string;
+
+    public function revokeAccessToken(string $accessToken): void;
+
     public function insert(UserEntity $user): UserEntity;
 
     public function findById(string $id): ?UserEntity;
