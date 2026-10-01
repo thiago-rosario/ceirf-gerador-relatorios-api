@@ -2,6 +2,7 @@
 
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * @return array{report_series_id: int, report_type_id: int, created_by: int, created_at: string}
@@ -46,7 +47,43 @@ test('reports can be created with only required fields and revised in the same s
         'id' => $reportId, 'revision_number' => 0, 'municipality_id' => null, 'updated_at' => null,
     ]);
     $this->assertDatabaseHas('reports', ['previous_report_id' => $reportId, 'revision_number' => 1]);
-    $this->assertDatabaseHas('users', ['id' => $attributes['created_by'], 'is_active' => true]);
+    $this->assertDatabaseHas('users', [
+        'id' => $attributes['created_by'], 'is_active' => true, 'must_change_password' => false,
+    ]);
+});
+
+test('users can persist both required password change states', function (bool $mustChangePassword): void {
+    $userId = DB::table('users')->insertGetId([
+        'name' => 'Ana',
+        'email' => 'ana@example.com',
+        'password' => 'test-password',
+        'must_change_password' => $mustChangePassword,
+        'created_at' => '2026-09-30 12:00:00',
+    ]);
+
+    $this->assertDatabaseHas('users', ['id' => $userId, 'must_change_password' => $mustChangePassword]);
+})->with(['required' => [true], 'not required' => [false]]);
+
+test('the password change migration defaults existing users to false and rolls back without deleting them', function (): void {
+    $migration = require database_path('migrations/Identity/2026_10_01_000014_add_must_change_password_to_users_table.php');
+    $migration->down();
+    $attributes = [
+        'name' => 'Existing user',
+        'email' => 'existing@example.com',
+        'password' => 'test-password',
+        'created_at' => '2026-09-30 12:00:00',
+    ];
+    $userId = DB::table('users')->insertGetId($attributes);
+
+    $migration->up();
+
+    $this->assertDatabaseHas('users', [...$attributes, 'id' => $userId, 'must_change_password' => false]);
+
+    $migration->down();
+
+    expect(Schema::hasColumn('users', 'must_change_password'))->toBeFalse();
+    $this->assertDatabaseHas('users', [...$attributes, 'id' => $userId]);
+    $this->assertDatabaseCount('users', 1);
 });
 
 test('a series rejects duplicate revision numbers', function () {
