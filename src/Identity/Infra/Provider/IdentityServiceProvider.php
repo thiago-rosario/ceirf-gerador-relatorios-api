@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace src\Identity\Infra\Provider;
 
 use Illuminate\Support\ServiceProvider;
+use src\Identity\Application\Interfaces\Adapter\AuthenticateUserAdapterInterface;
 use src\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
 use src\Identity\Application\Interfaces\Service\UserAuthenticatorServiceInterface;
 use src\Identity\Application\Interfaces\Usecase\Auth\AuthenticateUserUsecaseInterface;
@@ -23,6 +24,7 @@ use src\Identity\Application\Usecase\User\FindByIdUserUsecase;
 use src\Identity\Application\Usecase\User\ListAllUserUsecase;
 use src\Identity\Application\Usecase\User\UpdateUserUsecase;
 use src\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Identity\Infra\Adapter\AuthenticateUserAdapter;
 use src\Identity\Infra\Repositories\UserEloquentRepository;
 use src\Identity\Infra\Service\PasswordHasherService;
 
@@ -35,6 +37,7 @@ class IdentityServiceProvider extends ServiceProvider
         $this->app->bind(PasswordHasherServiceInterface::class, PasswordHasherService::class);
         $this->app->bind(UserAuthenticatorServiceInterface::class, UserAuthenticatorService::class);
 
+        $this->app->bind(AuthenticateUserAdapterInterface::class, AuthenticateUserAdapter::class);
         $this->app->bind(AuthenticateUserUsecaseInterface::class, AuthenticateUserUsecase::class);
         $this->app->bind(LogoutUserUsecaseInterface::class, LogoutUserUsecase::class);
 
