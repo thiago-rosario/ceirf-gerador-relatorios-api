@@ -8,18 +8,23 @@ use src\Identity\Application\DTO\Auth\AuthenticateUserInputDTO;
 use src\Identity\Application\DTO\Auth\AuthenticateUserOutputDTO;
 use src\Identity\Application\DTO\User\UserDataDTO;
 use src\Identity\Application\Exception\InvalidCredentialsException;
+use src\Identity\Application\Interfaces\Service\UserAuthenticatorServiceInterface;
 use src\Identity\Application\Interfaces\Usecase\Auth\AuthenticateUserUsecaseInterface;
 use src\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Identity\Domain\ValueObject\EmailValueObject;
 
 class AuthenticateUserUsecase implements AuthenticateUserUsecaseInterface
 {
     public function __construct(
         private readonly UserRepositoryInterface $repository,
+        private readonly UserAuthenticatorServiceInterface $service,
     ) {}
 
     public function __invoke(AuthenticateUserInputDTO $input): AuthenticateUserOutputDTO
     {
-        $user = $this->repository->authenticate($input->email, $input->password);
+        $email = new EmailValueObject($input->email);
+
+        $user = $this->service->authenticate($email, $input->password);
 
         if ($user === null || ! $user->isActive()) {
             throw new InvalidCredentialsException;

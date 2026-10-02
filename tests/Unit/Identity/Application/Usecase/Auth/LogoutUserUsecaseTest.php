@@ -15,7 +15,7 @@ afterEach(function (): void {
 test('revokes only the access token received for logout', function (): void {
     $repository = Mockery::mock(UserRepositoryInterface::class);
     $repository->shouldReceive('revokeAccessToken')->once()->with('current-access-token');
-    $repository->shouldNotReceive('authenticate');
+    $repository->shouldNotReceive('findByEmail');
     $repository->shouldNotReceive('createAccessToken');
     $usecase = new LogoutUserUsecase($repository);
 
