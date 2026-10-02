@@ -6,7 +6,7 @@ namespace src\Identity\Application\Usecase\Auth;
 
 use src\Identity\Application\DTO\Auth\LogoutUserInputDTO;
 use src\Identity\Application\Exception\InvalidCredentialsException;
-use src\Identity\Application\Interfaces\Auth\LogoutUserUsecaseInterface;
+use src\Identity\Application\Interfaces\Usecase\Auth\LogoutUserUsecaseInterface;
 use src\Identity\Domain\Repository\UserRepositoryInterface;
 
 class LogoutUserUsecase implements LogoutUserUsecaseInterface

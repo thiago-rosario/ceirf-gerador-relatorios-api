@@ -8,7 +8,7 @@ use src\Identity\Application\DTO\Auth\AuthenticateUserInputDTO;
 use src\Identity\Application\DTO\Auth\AuthenticateUserOutputDTO;
 use src\Identity\Application\DTO\User\UserDataDTO;
 use src\Identity\Application\Exception\InvalidCredentialsException;
-use src\Identity\Application\Interfaces\Auth\AuthenticateUserUsecaseInterface;
+use src\Identity\Application\Interfaces\Usecase\Auth\AuthenticateUserUsecaseInterface;
 use src\Identity\Domain\Repository\UserRepositoryInterface;
 
 class AuthenticateUserUsecase implements AuthenticateUserUsecaseInterface

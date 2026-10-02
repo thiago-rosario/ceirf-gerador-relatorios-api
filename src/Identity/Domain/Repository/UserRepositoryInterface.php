@@ -21,6 +21,8 @@ interface UserRepositoryInterface
 
     public function findByEmail(string $email): ?UserEntity;
 
+    public function findByName(string $name): ?UserEntity;
+
     /**
      * @return array<UserEntity>
      */

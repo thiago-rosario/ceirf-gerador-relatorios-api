@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace src\Identity\Application\Interfaces\Auth;
+namespace src\Identity\Application\Interfaces\Usecase\Auth;
 
 use src\Identity\Application\DTO\Auth\AuthenticateUserInputDTO;
 use src\Identity\Application\DTO\Auth\AuthenticateUserOutputDTO;
