@@ -12,7 +12,7 @@ class InvalidCredentialsException extends RuntimeException
 {
     public function __construct(
         string $message = 'Credenciais inválidas.',
-        int $code = CodeExceptionEnum::INVALID_CREDENTIALS_ERROR->vINVALID_CREDENTIALS_ERRORalue,
+        int $code = CodeExceptionEnum::INVALID_CREDENTIALS_ERROR->value,
         ?Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);

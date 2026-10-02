@@ -5,11 +5,14 @@ declare(strict_types=1);
 use src\Identity\Application\DTO\Auth\AuthenticateUserInputDTO;
 use src\Identity\Application\DTO\Auth\AuthenticateUserOutputDTO;
 use src\Identity\Application\Exception\InvalidCredentialsException;
+use src\Identity\Application\Interfaces\Service\UserAuthenticatorServiceInterface;
 use src\Identity\Application\Interfaces\Usecase\Auth\AuthenticateUserUsecaseInterface;
 use src\Identity\Application\Usecase\Auth\AuthenticateUserUsecase;
 use src\Identity\Domain\Entity\UserEntity;
 use src\Identity\Domain\Enum\UserRoleEnum;
+use src\Identity\Domain\Exception\InvalidEmailException;
 use src\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Identity\Domain\ValueObject\EmailValueObject;
 
 afterEach(function (): void {
     Mockery::close();
@@ -23,12 +26,16 @@ test('returns the issued access token and public user data for each role', funct
         password: 'stored-password-hash',
         role: $role,
     );
+    $authenticator = Mockery::mock(UserAuthenticatorServiceInterface::class);
+    $authenticator->shouldReceive('authenticate')->once()->with(
+        Mockery::on(fn (EmailValueObject $email): bool => $email->value() === 'ana@example.com'),
+        ' secret ',
+    )->andReturn($user);
     $repository = Mockery::mock(UserRepositoryInterface::class);
-    $repository->shouldReceive('authenticate')->once()->with('ana@example.com', ' secret ')->andReturn($user);
     $repository->shouldReceive('createAccessToken')->once()->with($user)->andReturn('issued-access-token');
-    $usecase = new AuthenticateUserUsecase($repository);
+    $usecase = new AuthenticateUserUsecase($repository, $authenticator);
 
-    $output = $usecase(new AuthenticateUserInputDTO(email: 'ana@example.com', password: ' secret '));
+    $output = $usecase(new AuthenticateUserInputDTO(email: ' ANA@example.com ', password: ' secret '));
 
     expect($usecase)->toBeInstanceOf(AuthenticateUserUsecaseInterface::class);
     expect($output)->toBeInstanceOf(AuthenticateUserOutputDTO::class);
@@ -42,10 +49,14 @@ test('returns the issued access token and public user data for each role', funct
 })->with(UserRoleEnum::cases());
 
 test('rejects invalid credentials without issuing an access token', function (): void {
+    $authenticator = Mockery::mock(UserAuthenticatorServiceInterface::class);
+    $authenticator->shouldReceive('authenticate')->once()->with(
+        Mockery::on(fn (EmailValueObject $email): bool => $email->value() === 'ana@example.com'),
+        'wrong-password',
+    )->andReturnNull();
     $repository = Mockery::mock(UserRepositoryInterface::class);
-    $repository->shouldReceive('authenticate')->once()->with('ana@example.com', 'wrong-password')->andReturnNull();
     $repository->shouldNotReceive('createAccessToken');
-    $usecase = new AuthenticateUserUsecase($repository);
+    $usecase = new AuthenticateUserUsecase($repository, $authenticator);
 
     expect(fn () => $usecase(new AuthenticateUserInputDTO(email: 'ana@example.com', password: 'wrong-password')))
         ->toThrow(function (InvalidCredentialsException $exception): void {
@@ -56,11 +67,44 @@ test('rejects invalid credentials without issuing an access token', function ():
 
 test('rejects inactive users without issuing an access token', function (): void {
     $user = new UserEntity(name: 'Ana', email: 'ana@example.com', password: 'stored-password-hash', isActive: false);
+    $authenticator = Mockery::mock(UserAuthenticatorServiceInterface::class);
+    $authenticator->shouldReceive('authenticate')->once()->with(
+        Mockery::on(fn (EmailValueObject $email): bool => $email->value() === 'ana@example.com'),
+        'secret',
+    )->andReturn($user);
     $repository = Mockery::mock(UserRepositoryInterface::class);
-    $repository->shouldReceive('authenticate')->once()->with('ana@example.com', 'secret')->andReturn($user);
     $repository->shouldNotReceive('createAccessToken');
-    $usecase = new AuthenticateUserUsecase($repository);
+    $usecase = new AuthenticateUserUsecase($repository, $authenticator);
 
     expect(fn () => $usecase(new AuthenticateUserInputDTO(email: 'ana@example.com', password: 'secret')))
         ->toThrow(InvalidCredentialsException::class, 'Credenciais inválidas.');
+});
+
+test('rejects an invalid email before authenticating or issuing an access token', function (string $email): void {
+    $authenticator = Mockery::mock(UserAuthenticatorServiceInterface::class);
+    $authenticator->shouldNotReceive('authenticate');
+    $repository = Mockery::mock(UserRepositoryInterface::class);
+    $repository->shouldNotReceive('createAccessToken');
+    $usecase = new AuthenticateUserUsecase($repository, $authenticator);
+
+    expect(fn () => $usecase(new AuthenticateUserInputDTO(email: $email, password: 'secret')))
+        ->toThrow(InvalidEmailException::class);
+})->with([
+    'empty email' => [''],
+    'malformed email' => ['invalid-email'],
+]);
+
+test('preserves an authenticator failure without issuing an access token', function (): void {
+    $exception = new RuntimeException('Falha ao autenticar o usuário.');
+    $authenticator = Mockery::mock(UserAuthenticatorServiceInterface::class);
+    $authenticator->shouldReceive('authenticate')->once()->with(
+        Mockery::on(fn (EmailValueObject $email): bool => $email->value() === 'ana@example.com'),
+        'secret',
+    )->andThrow($exception);
+    $repository = Mockery::mock(UserRepositoryInterface::class);
+    $repository->shouldNotReceive('createAccessToken');
+    $usecase = new AuthenticateUserUsecase($repository, $authenticator);
+
+    expect(fn () => $usecase(new AuthenticateUserInputDTO(email: 'ana@example.com', password: 'secret')))
+        ->toThrow($exception);
 });
