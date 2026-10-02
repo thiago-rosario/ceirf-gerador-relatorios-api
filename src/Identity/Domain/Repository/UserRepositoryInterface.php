@@ -31,8 +31,4 @@ interface UserRepositoryInterface
     public function paginate(int $page = 1, int $perPage = 10, string $filter = '', string $orderBy = 'DESC'): PaginationInterface;
 
     public function update(UserEntity $user): UserEntity;
-
-    public function deactivate(UserEntity $user): UserEntity;
-
-    public function delete(UserEntity $user): void;
 }
