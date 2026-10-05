@@ -15,5 +15,6 @@ readonly class FindByIdUserOutputDTO
         public string $role,
         public bool $isActive,
         public DateTimeImmutable $createdAt,
+        public bool $mustChangePassword,
     ) {}
 }

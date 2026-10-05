@@ -19,7 +19,7 @@ class ListAllUserUsecase implements ListAllUserUsecaseInterface
     public function __invoke(ListAllUserInputDTO $input): ListAllUserOutputDTO
     {
         $users = $this->repository->findAll($input->filter, $input->orderBy);
-        
+
         $usersData = [];
 
         foreach ($users as $user) {
@@ -30,6 +30,7 @@ class ListAllUserUsecase implements ListAllUserUsecaseInterface
                 role: $user->role()->value,
                 isActive: $user->isActive(),
                 createdAt: $user->createdAt(),
+                mustChangePassword: $user->mustChangePassword(),
             );
         }
 

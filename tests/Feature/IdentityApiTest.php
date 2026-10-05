@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 use App\Model\Role;
 use App\Model\User;
+use Illuminate\Cache\RateLimiter as CacheRateLimiter;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use src\Identity\Domain\Enum\UserRoleEnum;
 
@@ -72,6 +75,53 @@ describe('authentication', function (): void {
         $this->assertDatabaseCount('user_access_tokens', 0);
     });
 
+    test('an unexpected login failure returns 500, reports the exception and creates no token', function (): void {
+        $user = User::factory()->create();
+        $exception = new RuntimeException('User retrieval failed.');
+        Exceptions::fake();
+        User::retrieved(function (User $retrievedUser) use ($user, $exception): void {
+            if ($retrievedUser->id === $user->id) {
+                throw $exception;
+            }
+        });
+
+        $response = $this->postJson('/api/auth/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response->assertInternalServerError()->assertJsonPath('status', 'error')
+            ->assertJsonPath('message', 'An unexpected error occurred');
+        $this->assertDatabaseCount('user_access_tokens', 0);
+        Exceptions::assertReported(fn (RuntimeException $reportedException): bool => $reportedException === $exception);
+    });
+
+    test('login responds to browser preflight without requiring authentication', function (): void {
+        $response = $this->options('/api/auth/login', headers: [
+            'Origin' => 'http://localhost:5173',
+            'Access-Control-Request-Method' => 'POST',
+            'Access-Control-Request-Headers' => 'content-type',
+        ]);
+
+        $response->assertNoContent()
+            ->assertHeader('Access-Control-Allow-Origin', '*')
+            ->assertHeader('Access-Control-Allow-Methods', 'POST')
+            ->assertHeader('Access-Control-Allow-Headers', 'content-type');
+        $this->assertDatabaseCount('user_access_tokens', 0);
+    });
+
+    test('login returns the CORS header required by the frontend browser', function (): void {
+        $user = User::factory()->create();
+
+        $response = $this->postJson('/api/auth/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ], ['Origin' => 'http://localhost:5173']);
+
+        $response->assertOk()->assertHeader('Access-Control-Allow-Origin', '*');
+        $this->assertDatabaseHas('user_access_tokens', ['user_id' => $user->id]);
+    });
+
     test('login returns 422 when required credentials are missing', function (): void {
         $response = $this->postJson('/api/auth/login');
 
@@ -111,6 +161,27 @@ describe('authentication', function (): void {
         $this->assertDatabaseCount('user_access_tokens', 0);
     });
 
+    test('login succeeds and the sixth attempt returns 429 with the configured database cache', function (): void {
+        $this->freezeTime();
+        config(['cache.default' => 'database']);
+        $loginLimiter = RateLimiter::limiter('auth-login');
+        $rateLimiter = new CacheRateLimiter(Cache::store());
+        $rateLimiter->for('auth-login', $loginLimiter);
+        RateLimiter::swap($rateLimiter);
+        $user = User::factory()->create();
+        $credentials = ['email' => $user->email, 'password' => 'password'];
+        $this->postJson('/api/auth/login', $credentials)->assertOk();
+        for ($attempt = 0; $attempt < 4; $attempt++) {
+            $this->postJson('/api/auth/login', [...$credentials, 'password' => 'wrong-password'])->assertUnauthorized();
+        }
+
+        $response = $this->postJson('/api/auth/login', $credentials);
+
+        $response->assertTooManyRequests()->assertHeader('Retry-After', '60');
+        $this->assertDatabaseCount('cache', 2);
+        $this->assertDatabaseCount('user_access_tokens', 1);
+    });
+
     test('protected endpoints return 401 when a bearer token is missing', function (string $method, string $uri): void {
         $response = $this->json($method, $uri);
 
@@ -125,12 +196,71 @@ describe('authentication', function (): void {
         'deactivate user' => ['PATCH', '/api/users/550e8400-e29b-41d4-a716-446655440000/deactivate'],
         'reset password' => ['POST', '/api/auth/reset-password/550e8400-e29b-41d4-a716-446655440000'],
         'logout' => ['POST', '/api/auth/logout'],
+        'current user' => ['GET', '/api/auth/me'],
     ]);
 
     test('protected endpoints return 401 when the bearer token is invalid', function (): void {
         $response = $this->withToken('invalid-token')->getJson('/api/users');
 
         $response->assertUnauthorized()->assertJsonPath('status', 'error');
+    });
+
+    test('session validation returns the current public user for every role and ignores client criteria', function (UserRoleEnum $role): void {
+        $user = User::factory()->withRole($role)->create();
+        $otherUser = User::factory()->create();
+        $accessToken = identityAccessToken($user);
+        $user->update(['name' => 'Updated User']);
+
+        $response = $this->withToken($accessToken)->getJson('/api/auth/me?id='.$otherUser->uuid.'&email='.$otherUser->email);
+
+        $response->assertOk()
+            ->assertJsonPath('status', 'success')
+            ->assertJsonPath('data.user.id', $user->uuid)
+            ->assertJsonPath('data.user.name', 'Updated User')
+            ->assertJsonPath('data.user.role', $role->value)
+            ->assertJsonPath('data.user.must_change_password', false)
+            ->assertExactJsonStructure([
+                'status',
+                'data' => ['user' => ['id', 'name', 'email', 'role', 'is_active', 'created_at', 'must_change_password']],
+            ]);
+        $this->assertDatabaseCount('user_access_tokens', 1);
+    })->with(UserRoleEnum::cases());
+
+    test('session validation returns 401 for an invalid bearer token', function (): void {
+        $response = $this->withToken('invalid-token')->getJson('/api/auth/me');
+
+        $response->assertUnauthorized()->assertJsonPath('message', 'Não autenticado.');
+    });
+
+    test('session validation returns 401 after the current token is revoked', function (): void {
+        $user = User::factory()->create();
+        $accessToken = identityAccessToken($user);
+        $this->withToken($accessToken)->postJson('/api/auth/logout')->assertOk();
+        Auth::forgetGuards();
+
+        $response = $this->withToken($accessToken)->getJson('/api/auth/me');
+
+        $response->assertUnauthorized()->assertJsonPath('message', 'Não autenticado.');
+    });
+
+    test('session validation returns 401 after the user becomes inactive', function (): void {
+        $user = User::factory()->create();
+        $accessToken = identityAccessToken($user);
+        $user->update(['is_active' => false]);
+
+        $response = $this->withToken($accessToken)->getJson('/api/auth/me');
+
+        $response->assertUnauthorized()->assertJsonPath('message', 'Não autenticado.');
+    });
+
+    test('session validation remains accessible when a password change is required', function (): void {
+        $user = User::factory()->mustChangePassword()->create();
+        $accessToken = identityAccessToken($user);
+
+        $response = $this->withToken($accessToken)->getJson('/api/auth/me');
+
+        $response->assertOk()->assertJsonPath('data.user.must_change_password', true);
+        $this->assertDatabaseCount('user_access_tokens', 1);
     });
 
     test('logout revokes only the current token and preserves another session', function (): void {
@@ -280,7 +410,7 @@ describe('user administration', function (): void {
             ->assertJsonPath('data.email', $user->email)
             ->assertExactJsonStructure([
                 'status',
-                'data' => ['id', 'name', 'email', 'role', 'is_active', 'created_at'],
+                'data' => ['id', 'name', 'email', 'role', 'is_active', 'created_at', 'must_change_password'],
             ]);
     });
 

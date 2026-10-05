@@ -28,7 +28,7 @@ class ListAllUserDataAdapter implements ListAllUserDataAdapterInterface
     }
 
     /**
-     * @return array{users: list<array{id: string, name: string, email: string, role: string, is_active: bool, created_at: string}>}
+     * @return array{users: list<array{id: string, name: string, email: string, role: string, is_active: bool, created_at: string, must_change_password: bool}>}
      */
     public function toArray(ListAllUserOutputDTO $data): array
     {

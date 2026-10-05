@@ -41,6 +41,8 @@ class AuthenticateUserController extends Controller
             return response()
                 ->json($response->toArray(), 401);
         } catch (\Throwable $e) {
+            report($e);
+
             $response = new ResponseJsend(
                 status: 'error',
                 message: 'An unexpected error occurred',

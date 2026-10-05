@@ -60,6 +60,7 @@ class FindByIdUserUsecase implements FindByIdUserUsecaseInterface
             role: $user->role()->value,
             isActive: $user->isActive(),
             createdAt: $user->createdAt(),
+            mustChangePassword: $user->mustChangePassword(),
         );
     }
 }

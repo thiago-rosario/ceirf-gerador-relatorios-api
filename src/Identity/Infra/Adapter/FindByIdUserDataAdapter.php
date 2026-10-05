@@ -23,7 +23,7 @@ class FindByIdUserDataAdapter implements FindByIdUserDataAdapterInterface
     }
 
     /**
-     * @return array{id: string, name: string, email: string, role: string, is_active: bool, created_at: string}
+     * @return array{id: string, name: string, email: string, role: string, is_active: bool, created_at: string, must_change_password: bool}
      */
     public function toArray(FindByIdUserOutputDTO $data): array
     {
@@ -34,6 +34,7 @@ class FindByIdUserDataAdapter implements FindByIdUserDataAdapterInterface
             'role' => $data->role,
             'is_active' => $data->isActive,
             'created_at' => $data->createdAt->format(DATE_ATOM),
+            'must_change_password' => $data->mustChangePassword,
         ];
     }
 }
