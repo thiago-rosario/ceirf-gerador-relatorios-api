@@ -45,8 +45,30 @@ test('returns the issued access token and public user data for each role', funct
         'name' => 'Ana Silva',
         'email' => 'ana@example.com',
         'role' => $role->value,
+        'mustChangePassword' => false,
     ]);
 })->with(UserRoleEnum::cases());
+
+test('exposes the required password change after authenticating a reset user', function (): void {
+    $user = new UserEntity(
+        name: 'Ana',
+        email: 'ana@example.com',
+        password: 'stored-password-hash',
+        mustChangePassword: true,
+    );
+    $authenticator = Mockery::mock(UserAuthenticatorServiceInterface::class);
+    $authenticator->shouldReceive('authenticate')->once()->with(
+        Mockery::on(fn (EmailValueObject $email): bool => $email->value() === 'ana@example.com'),
+        'sspba123',
+    )->andReturn($user);
+    $repository = Mockery::mock(UserRepositoryInterface::class);
+    $repository->shouldReceive('createAccessToken')->once()->with($user)->andReturn('issued-access-token');
+    $usecase = new AuthenticateUserUsecase($repository, $authenticator);
+
+    $output = $usecase(new AuthenticateUserInputDTO(email: 'ana@example.com', password: 'sspba123'));
+
+    expect($output->user->mustChangePassword)->toBeTrue();
+});
 
 test('rejects invalid credentials without issuing an access token', function (): void {
     $authenticator = Mockery::mock(UserAuthenticatorServiceInterface::class);

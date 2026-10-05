@@ -15,7 +15,7 @@ interface AuthenticateUserAdapterInterface
     public function fromArray(array $data): AuthenticateUserInputDTO;
 
     /**
-     * @return array{access_token: string, user: array{id: string, name: string, email: string, role: string}}
+     * @return array{access_token: string, user: array{id: string, name: string, email: string, role: string, must_change_password: bool}}
      */
     public function toArray(AuthenticateUserOutputDTO $data): array;
 }

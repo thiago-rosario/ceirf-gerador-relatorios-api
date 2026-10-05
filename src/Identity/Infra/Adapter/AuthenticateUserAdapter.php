@@ -22,7 +22,7 @@ class AuthenticateUserAdapter implements AuthenticateUserAdapterInterface
     }
 
     /**
-     * @return array{access_token: string, user: array{id: string, name: string, email: string, role: string}}
+     * @return array{access_token: string, user: array{id: string, name: string, email: string, role: string, must_change_password: bool}}
      */
     public function toArray(AuthenticateUserOutputDTO $data): array
     {
@@ -33,6 +33,7 @@ class AuthenticateUserAdapter implements AuthenticateUserAdapterInterface
                 'name' => $data->user->name,
                 'email' => $data->user->email,
                 'role' => $data->user->role,
+                'must_change_password' => $data->user->mustChangePassword,
             ],
         ];
     }
