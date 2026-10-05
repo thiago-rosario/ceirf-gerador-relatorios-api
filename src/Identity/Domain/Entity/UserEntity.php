@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace src\Identity\Domain\Entity;
 
+use App\Model\User;
 use DateTimeImmutable;
 use DateTimeInterface;
 use src\Identity\Domain\Enum\UserRoleEnum;
@@ -178,5 +179,20 @@ class UserEntity
     public function validate(): void
     {
         UserValidation::validate($this);
+    }
+
+    public static function fromModel(User $model): UserEntity
+    {
+        return new UserEntity(
+            id: $model->uuid,
+            name: $model->name,
+            email: $model->email,
+            password: $model->password,
+            isActive: $model->is_active,
+            role: $model->role,
+            mustChangePassword: $model->must_change_password,
+            createdAt: $model->created_at,
+            updatedAt: $model->updated_at,
+        );
     }
 }

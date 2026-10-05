@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace src\Identity\Infra\Repositories\Auth;
 
-use Laravel\Sanctum\Sanctum;
+use Illuminate\Support\Facades\DB;
 
 class RevokeAccessTokenEloquentRepository
 {
     public function revokeAccessToken(string $accessToken): void
     {
-        $personalAccessTokenModel = Sanctum::personalAccessTokenModel();
-
-        $personalAccessTokenModel::findToken($accessToken)?->delete();
+        DB::table('user_access_tokens')->where('token', hash('sha256', $accessToken))->delete();
     }
 }

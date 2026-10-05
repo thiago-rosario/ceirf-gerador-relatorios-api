@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace src\Identity\Infra\Repositories\Queries;
 
-use App\Models\User as UserModel;
+use App\Model\User as UserModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use InvalidArgumentException;
@@ -19,14 +19,21 @@ class PaginateUserEloquentRepository
             throw new InvalidArgumentException('A página e a quantidade de itens por página devem ser maiores que zero.');
         }
 
+        $direction = match (strtoupper($orderBy)) {
+            'ASC' => 'asc',
+            'DESC' => 'desc',
+            default => throw new InvalidArgumentException('A ordenação deve ser ASC ou DESC.'),
+        };
+
         $paginator = UserModel::query()
+            ->with('roles')
             ->when($filter !== '', fn (Builder $query): Builder => $query->where(
                 fn (Builder $filterQuery): Builder => $filterQuery
                     ->where('name', 'like', "%{$filter}%")
                     ->orWhere('email', 'like', "%{$filter}%"),
             ))
-            ->orderBy('created_at', $orderBy)
-            ->orderBy('id', $orderBy)
+            ->orderBy('created_at', $direction)
+            ->orderBy('id', $direction)
             ->paginate($perPage, ['*'], 'page', $page);
 
         $users = $paginator->getCollection()
