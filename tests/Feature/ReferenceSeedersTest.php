@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 test('default seeding installs the reference data and can be repeated without changing IDs', function () {
     $expectedRecords = [
         'roles' => [
-            ['code' => 'report_author', 'name' => 'Autor de relatório'],
+            ['code' => 'operator', 'name' => 'Operador'],
             ['code' => 'reviewer', 'name' => 'Revisor'],
             ['code' => 'super_user', 'name' => 'Superusuário'],
             ['code' => 'viewer', 'name' => 'Visualizador'],
@@ -46,8 +46,8 @@ test('default seeding installs the reference data and can be repeated without ch
         expect(Schema::hasColumn($table, 'created_at'))->toBeFalse();
         expect(Schema::hasColumn($table, 'updated_at'))->toBeFalse();
     }
-    $this->assertDatabaseEmpty('users');
-    $this->assertDatabaseEmpty('user_roles');
+    $this->assertDatabaseCount('users', 4);
+    $this->assertDatabaseCount('user_roles', 4);
 });
 
 test('seeding restores predefined names and active flags while preserving IDs and descriptions', function () {

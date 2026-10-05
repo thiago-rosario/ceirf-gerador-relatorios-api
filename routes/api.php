@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Identity\Auth\AuthenticateUserController;
+use App\Http\Controllers\Identity\Auth\CurrentUserController;
 use App\Http\Controllers\Identity\Auth\LogoutUserController;
 use App\Http\Controllers\Identity\Auth\ResetUserPasswordController;
 use App\Http\Controllers\Identity\User\CreateUserController;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/login', AuthenticateUserController::class)
     ->middleware('throttle:auth-login')
     ->name('auth.login');
+
+Route::get('/auth/me', CurrentUserController::class)
+    ->middleware('auth:api')
+    ->name('auth.me');
 
 Route::middleware(['auth:api', EnsurePasswordIsChanged::class])->group(function (): void {
     Route::post('/auth/logout', LogoutUserController::class)->name('auth.logout');

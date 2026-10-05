@@ -15,7 +15,7 @@ interface FindByIdUserDataAdapterInterface
     public function fromArray(array $data): FindByIdUserInputDTO;
 
     /**
-     * @return array{id: string, name: string, email: string, role: string, is_active: bool, created_at: string}
+     * @return array{id: string, name: string, email: string, role: string, is_active: bool, created_at: string, must_change_password: bool}
      */
     public function toArray(FindByIdUserOutputDTO $data): array;
 }
