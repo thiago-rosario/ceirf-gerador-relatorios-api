@@ -2,16 +2,19 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Model\Role;
+use App\Model\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use src\Identity\Domain\Enum\UserRoleEnum;
 
 /**
  * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
+    protected $model = User::class;
+
     /**
      * The current password being used by the factory.
      */
@@ -27,19 +30,37 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'is_active' => true,
+            'must_change_password' => false,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    public function configure(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->withRole(UserRoleEnum::OPERATOR);
+    }
+
+    public function withRole(UserRoleEnum $role): static
+    {
+        return $this->afterCreating(function (User $user) use ($role): void {
+            $user->roles()->sync([Role::forRole($role)->id]);
+            $user->unsetRelation('roles');
+        });
+    }
+
+    public function superuser(): static
+    {
+        return $this->withRole(UserRoleEnum::SUPERUSER);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes): array => ['is_active' => false]);
+    }
+
+    public function mustChangePassword(): static
+    {
+        return $this->state(fn (array $attributes): array => ['must_change_password' => true]);
     }
 }
