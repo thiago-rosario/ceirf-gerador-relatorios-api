@@ -6,22 +6,27 @@ namespace src\Identity\Application\Usecase\User;
 
 use src\Identity\Application\DTO\User\CreateUserInputDTO;
 use src\Identity\Application\DTO\User\CreateUserOutputDTO;
+use src\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
 use src\Identity\Application\Interfaces\Usecase\User\CreateUserUsecaseInterface;
 use src\Identity\Domain\Entity\UserEntity;
 use src\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Identity\Domain\Validation\UserValidation;
 
 class CreateUserUsecase implements CreateUserUsecaseInterface
 {
     public function __construct(
         private readonly UserRepositoryInterface $repository,
+        private readonly PasswordHasherServiceInterface $hasher,
     ) {}
 
     public function __invoke(CreateUserInputDTO $input): CreateUserOutputDTO
     {
+        UserValidation::validatePassword($input->password);
+
         $user = new UserEntity(
             name: $input->name,
             email: $input->email,
-            password: $input->password,
+            password: $this->hasher->hash($input->password),
             role: $input->role,
         );
 

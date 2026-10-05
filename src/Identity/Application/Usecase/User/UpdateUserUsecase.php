@@ -7,14 +7,16 @@ namespace src\Identity\Application\Usecase\User;
 use src\Identity\Application\DTO\User\UpdateUserInputDTO;
 use src\Identity\Application\DTO\User\UpdateUserOutputDTO;
 use src\Identity\Application\Exception\UserNotFoundException;
+use src\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
 use src\Identity\Application\Interfaces\Usecase\User\UpdateUserUsecaseInterface;
 use src\Identity\Domain\Repository\UserRepositoryInterface;
-use src\Identity\Domain\Resolver\UuidResolver;
+use src\Identity\Domain\Validation\UserValidation;
 
 class UpdateUserUsecase implements UpdateUserUsecaseInterface
 {
     public function __construct(
         private readonly UserRepositoryInterface $repository,
+        private readonly PasswordHasherServiceInterface $hasher,
     ) {}
 
     public function __invoke(UpdateUserInputDTO $input): UpdateUserOutputDTO
@@ -36,7 +38,9 @@ class UpdateUserUsecase implements UpdateUserUsecaseInterface
         }
 
         if ($input->password !== null) {
-            $userToUpdate->changePassword($input->password);
+            UserValidation::validatePassword($input->password);
+
+            $userToUpdate->changePassword($this->hasher->hash($input->password));
         }
 
         if ($input->role !== null) {
