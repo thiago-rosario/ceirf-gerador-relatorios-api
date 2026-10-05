@@ -1,8 +1,10 @@
 <?php
 
+use App\Model\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 /**
  * @return array{report_series_id: int, report_type_id: int, created_by: int, created_at: string}
@@ -84,6 +86,47 @@ test('the password change migration defaults existing users to false and rolls b
     expect(Schema::hasColumn('users', 'must_change_password'))->toBeFalse();
     $this->assertDatabaseHas('users', [...$attributes, 'id' => $userId]);
     $this->assertDatabaseCount('users', 1);
+});
+
+test('the UUID migration upgrades legacy users and preserves report references when rolled back', function (): void {
+    $migration = require database_path('migrations/Identity/2026_10_05_011027_add_uuid_to_users_table.php');
+    $migration->down();
+    $attributes = reportMigrationAttributes();
+    $legacyUser = (array) DB::table('users')->where('id', $attributes['created_by'])->first();
+    $reportId = DB::table('reports')->insertGetId($attributes);
+
+    $migration->up();
+
+    $uuid = DB::table('users')->where('id', $attributes['created_by'])->value('uuid');
+    expect(Str::isUuid($uuid))->toBeTrue();
+    $this->assertDatabaseHas('users', [...$legacyUser, 'uuid' => $uuid]);
+    $this->assertDatabaseHas('report_series', [
+        'id' => $attributes['report_series_id'],
+        'created_by' => $attributes['created_by'],
+    ]);
+    $this->assertDatabaseHas('reports', ['id' => $reportId, ...$attributes]);
+
+    $migration->down();
+
+    expect(Schema::hasColumn('users', 'uuid'))->toBeFalse();
+    $this->assertDatabaseHas('users', $legacyUser);
+    $this->assertDatabaseHas('report_series', [
+        'id' => $attributes['report_series_id'],
+        'created_by' => $attributes['created_by'],
+    ]);
+    $this->assertDatabaseHas('reports', ['id' => $reportId, ...$attributes]);
+    expect(fn () => DB::table('users')->where('id', $attributes['created_by'])->delete())
+        ->toThrow(QueryException::class);
+    $this->assertDatabaseCount('users', 1);
+});
+
+test('users cannot share a public UUID', function (): void {
+    $user = User::factory()->create(['uuid' => '550e8400-e29b-41d4-a716-446655440000']);
+
+    expect(fn () => User::factory()->create(['uuid' => $user->uuid]))->toThrow(QueryException::class);
+
+    $this->assertDatabaseCount('users', 1);
+    $this->assertModelExists($user);
 });
 
 test('a series rejects duplicate revision numbers', function () {

@@ -35,6 +35,7 @@ class AuthenticateUserUsecase implements AuthenticateUserUsecaseInterface
             name: $user->name(),
             email: $user->email()->value(),
             role: $user->role()->value,
+            mustChangePassword: $user->mustChangePassword(),
         );
 
         $accessToken = $this->repository->createAccessToken($user);

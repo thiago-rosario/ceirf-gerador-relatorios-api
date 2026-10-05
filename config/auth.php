@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Model\User;
 
 return [
 
@@ -38,6 +38,10 @@ return [
     */
 
     'guards' => [
+        'api' => [
+            'driver' => 'access-token',
+            'provider' => 'users',
+        ],
         'web' => [
             'driver' => 'session',
             'provider' => 'users',

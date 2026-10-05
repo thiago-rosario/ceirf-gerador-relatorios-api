@@ -11,5 +11,6 @@ readonly class UserDataDTO
         public string $name,
         public string $email,
         public string $role,
+        public bool $mustChangePassword = false,
     ) {}
 }
