@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use src\Identity\Domain\Exception\InvalidEmailException;
-use src\Identity\Domain\ValueObject\EmailValueObject;
+use src\Modules\Identity\Domain\Exception\InvalidEmailException;
+use src\Modules\Identity\Domain\ValueObject\EmailValueObject;
 
 test('accepts and normalizes structurally valid email addresses', function (string $input, string $expected) {
     $email = new EmailValueObject($input);

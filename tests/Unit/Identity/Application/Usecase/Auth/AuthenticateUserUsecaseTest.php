@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use src\Identity\Application\DTO\Auth\AuthenticateUserInputDTO;
-use src\Identity\Application\DTO\Auth\AuthenticateUserOutputDTO;
-use src\Identity\Application\Exception\InvalidCredentialsException;
-use src\Identity\Application\Interfaces\Service\UserAuthenticatorServiceInterface;
-use src\Identity\Application\Interfaces\Usecase\Auth\AuthenticateUserUsecaseInterface;
-use src\Identity\Application\Usecase\Auth\AuthenticateUserUsecase;
-use src\Identity\Domain\Entity\UserEntity;
-use src\Identity\Domain\Enum\UserRoleEnum;
-use src\Identity\Domain\Exception\InvalidEmailException;
-use src\Identity\Domain\Repository\UserRepositoryInterface;
-use src\Identity\Domain\ValueObject\EmailValueObject;
+use src\Modules\Identity\Application\DTO\Auth\AuthenticateUserInputDTO;
+use src\Modules\Identity\Application\DTO\Auth\AuthenticateUserOutputDTO;
+use src\Modules\Identity\Application\Exception\InvalidCredentialsException;
+use src\Modules\Identity\Application\Interfaces\Service\UserAuthenticatorServiceInterface;
+use src\Modules\Identity\Application\Interfaces\Usecase\Auth\AuthenticateUserUsecaseInterface;
+use src\Modules\Identity\Application\Usecase\Auth\AuthenticateUserUsecase;
+use src\Modules\Identity\Domain\Entity\UserEntity;
+use src\Modules\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Domain\Exception\InvalidEmailException;
+use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Modules\Identity\Domain\ValueObject\EmailValueObject;
 
 afterEach(function (): void {
     Mockery::close();

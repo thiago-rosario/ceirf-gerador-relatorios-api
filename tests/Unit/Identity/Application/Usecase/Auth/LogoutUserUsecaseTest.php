@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use src\Identity\Application\DTO\Auth\LogoutUserInputDTO;
-use src\Identity\Application\Exception\InvalidCredentialsException;
-use src\Identity\Application\Interfaces\Usecase\Auth\LogoutUserUsecaseInterface;
-use src\Identity\Application\Usecase\Auth\LogoutUserUsecase;
-use src\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Modules\Identity\Application\DTO\Auth\LogoutUserInputDTO;
+use src\Modules\Identity\Application\Exception\InvalidCredentialsException;
+use src\Modules\Identity\Application\Interfaces\Usecase\Auth\LogoutUserUsecaseInterface;
+use src\Modules\Identity\Application\Usecase\Auth\LogoutUserUsecase;
+use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
 
 afterEach(function (): void {
     Mockery::close();

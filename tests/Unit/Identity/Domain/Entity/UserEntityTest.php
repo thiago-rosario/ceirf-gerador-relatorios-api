@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use src\Identity\Domain\Entity\UserEntity;
-use src\Identity\Domain\Enum\UserRoleEnum;
-use src\Identity\Domain\Exception\InvalidEmailException;
-use src\Identity\Domain\Exception\InvalidUserIdException;
-use src\Identity\Domain\Exception\UserNameCannotBeEmptyException;
-use src\Identity\Domain\Exception\UserPasswordCannotBeEmptyException;
-use src\Identity\Domain\Resolver\UuidResolver;
-use src\Identity\Domain\ValueObject\EmailValueObject;
+use src\Modules\Identity\Domain\Entity\UserEntity;
+use src\Modules\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Domain\Exception\InvalidEmailException;
+use src\Modules\Identity\Domain\Exception\InvalidUserIdException;
+use src\Modules\Identity\Domain\Exception\UserNameCannotBeEmptyException;
+use src\Modules\Identity\Domain\Exception\UserPasswordCannotBeEmptyException;
+use src\Modules\Identity\Domain\ValueObject\EmailValueObject;
+use src\Modules\Shared\Resolver\UuidResolver;
 
 test('creates users of every role with any structurally valid email', function (UserRoleEnum $role, string $address): void {
     $id = new UuidResolver('550e8400-e29b-41d4-a716-446655440000');

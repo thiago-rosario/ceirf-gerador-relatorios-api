@@ -1,9 +1,9 @@
 <?php
 
-use App\Model\User;
 use Database\Seeders\Identity\UserSeeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use src\Modules\Identity\Model\User;
 
 test('development seeding creates an active account with the requested password and role', function (string $email, string $role): void {
     $this->seed(UserSeeder::class);

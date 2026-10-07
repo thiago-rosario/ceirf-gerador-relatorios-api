@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 use Illuminate\Hashing\BcryptHasher;
-use src\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
-use src\Identity\Application\Service\UserAuthenticatorService;
-use src\Identity\Domain\Entity\UserEntity;
-use src\Identity\Domain\Repository\UserRepositoryInterface;
-use src\Identity\Domain\ValueObject\EmailValueObject;
-use src\Identity\Infra\Service\PasswordHasherService;
+use src\Modules\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
+use src\Modules\Identity\Application\Service\UserAuthenticatorService;
+use src\Modules\Identity\Domain\Entity\UserEntity;
+use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Modules\Identity\Domain\ValueObject\EmailValueObject;
+use src\Modules\Identity\Infra\Service\PasswordHasherService;
 
 afterEach(function (): void {
     Mockery::close();

@@ -3,18 +3,18 @@
 declare(strict_types=1);
 
 use Mockery\MockInterface;
-use src\Identity\Domain\Entity\UserEntity;
-use src\Identity\Infra\Repositories\Auth\CreateAccessTokenEloquentRepository;
-use src\Identity\Infra\Repositories\Auth\RevokeAccessTokenEloquentRepository;
-use src\Identity\Infra\Repositories\Commands\CreateUserEloquentRepository;
-use src\Identity\Infra\Repositories\Commands\UpdateUserEloquentRepository;
-use src\Identity\Infra\Repositories\Queries\FindAllUserEloquentRepository;
-use src\Identity\Infra\Repositories\Queries\FindUserByEmailEloquentRepository;
-use src\Identity\Infra\Repositories\Queries\FindUserByIdEloquentRepository;
-use src\Identity\Infra\Repositories\Queries\FindUserByNameEloquentRepository;
-use src\Identity\Infra\Repositories\Queries\PaginateUserEloquentRepository;
-use src\Identity\Infra\Repositories\UserEloquentRepository;
-use src\Shared\Contract\PaginationInterface;
+use src\Modules\Identity\Domain\Entity\UserEntity;
+use src\Modules\Identity\Infra\Repositories\Auth\CreateAccessTokenEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Auth\RevokeAccessTokenEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Commands\CreateUserEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Commands\UpdateUserEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Queries\FindAllUserEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Queries\FindUserByEmailEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Queries\FindUserByIdEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Queries\FindUserByNameEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Queries\PaginateUserEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\UserEloquentRepository;
+use src\Modules\Shared\Contract\PaginationInterface;
 
 afterEach(function (): void {
     Mockery::close();

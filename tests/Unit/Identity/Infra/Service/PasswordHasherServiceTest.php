@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Hashing\BcryptHasher;
-use src\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
-use src\Identity\Infra\Service\PasswordHasherService;
+use src\Modules\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
+use src\Modules\Identity\Infra\Service\PasswordHasherService;
 
 afterEach(function (): void {
     Mockery::close();

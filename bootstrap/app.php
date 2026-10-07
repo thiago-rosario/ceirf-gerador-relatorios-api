@@ -1,17 +1,17 @@
 <?php
 
-use App\Http\Helper\ResponseJsend;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use src\Modules\Shared\Helper\ResponseJsend;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        api: __DIR__.'/../routes/api.php',
+        api: __DIR__.'/../src/Modules/Identity/Presentation/Routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )

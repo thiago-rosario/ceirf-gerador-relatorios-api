@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use src\Identity\Application\DTO\User\DeactivateUserInputDTO;
-use src\Identity\Application\Exception\UserNotFoundException;
-use src\Identity\Application\Usecase\User\DeactivateUserUsecase;
-use src\Identity\Domain\Entity\UserEntity;
-use src\Identity\Domain\Exception\InvalidUserIdException;
-use src\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Modules\Identity\Application\DTO\User\DeactivateUserInputDTO;
+use src\Modules\Identity\Application\Exception\UserNotFoundException;
+use src\Modules\Identity\Application\Usecase\User\DeactivateUserUsecase;
+use src\Modules\Identity\Domain\Entity\UserEntity;
+use src\Modules\Identity\Domain\Exception\InvalidUserIdException;
+use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
 
 afterEach(function (): void {
     Mockery::close();
