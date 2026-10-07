@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-use src\Identity\Application\DTO\Auth\ResetUserPasswordInputDTO;
-use src\Identity\Application\Exception\UserNotFoundException;
-use src\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
-use src\Identity\Application\Usecase\Auth\ResetUserPasswordUsecase;
-use src\Identity\Domain\Entity\UserEntity;
-use src\Identity\Domain\Enum\UserRoleEnum;
-use src\Identity\Domain\Exception\InvalidUserIdException;
-use src\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Modules\Identity\Application\DTO\Auth\ResetUserPasswordInputDTO;
+use src\Modules\Identity\Application\Exception\UserNotFoundException;
+use src\Modules\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
+use src\Modules\Identity\Application\Usecase\Auth\ResetUserPasswordUsecase;
+use src\Modules\Identity\Domain\Entity\UserEntity;
+use src\Modules\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Domain\Exception\InvalidUserIdException;
+use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
 
 afterEach(function (): void {
     Mockery::close();

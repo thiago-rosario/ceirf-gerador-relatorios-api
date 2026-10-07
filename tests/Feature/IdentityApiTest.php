@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Model\Role;
-use App\Model\User;
 use Illuminate\Cache\RateLimiter as CacheRateLimiter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -11,7 +9,9 @@ use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use src\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Model\Role;
+use src\Modules\Identity\Model\User;
 
 function identityAccessToken(User $user): string
 {

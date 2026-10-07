@@ -1,10 +1,10 @@
 <?php
 
-use App\Model\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use src\Modules\Identity\Model\User;
 
 /**
  * @return array{report_series_id: int, report_type_id: int, created_by: int, created_at: string}

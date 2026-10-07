@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use src\Identity\Infra\Repositories\Queries\PaginateUserEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Queries\PaginateUserEloquentRepository;
 
 test('rejects invalid pagination limits before accessing persistence', function (int $page, int $perPage): void {
     $repository = new PaginateUserEloquentRepository;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Seeders\Identity;
 
-use App\Model\Role;
-use App\Model\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use src\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Model\Role;
+use src\Modules\Identity\Model\User;
 
 class UserSeeder extends Seeder
 {

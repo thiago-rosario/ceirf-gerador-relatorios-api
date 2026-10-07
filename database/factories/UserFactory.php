@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Model\Role;
-use App\Model\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use src\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Domain\Enum\UserRoleEnum;
+use src\Modules\Identity\Model\Role;
+use src\Modules\Identity\Model\User;
 
 /**
  * @extends Factory<User>
