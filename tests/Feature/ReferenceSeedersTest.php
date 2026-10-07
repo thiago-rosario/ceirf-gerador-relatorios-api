@@ -17,6 +17,8 @@ test('default seeding installs the reference data and can be repeated without ch
             ['code' => 'PC', 'name' => 'Policia Civil', 'is_active' => true],
             ['code' => 'BM', 'name' => 'Bombeiro militar', 'is_active' => true],
             ['code' => 'DPT', 'name' => 'Departamento de policia tecnica', 'is_active' => true],
+            ['code' => 'PC-PM', 'name' => 'Conjugada', 'is_active' => true],
+            ['code' => 'SSP', 'name' => 'Secretaria da Segurança Pública', 'is_active' => true],
         ],
         'sizes' => [
             ['name' => '1B'], ['name' => '1A'], ['name' => '1'], ['name' => 'Sem Padrão'],
@@ -50,7 +52,7 @@ test('default seeding installs the reference data and can be repeated without ch
     $this->assertDatabaseCount('user_roles', 4);
 });
 
-test('seeding restores predefined names and active flags while preserving IDs and descriptions', function () {
+test('seeding preserves existing forces and restores other reference data while preserving IDs and descriptions', function () {
     $forceId = DB::table('forces')->insertGetId(['code' => 'PM', 'name' => 'Old force', 'is_active' => false]);
     $roleId = DB::table('roles')->insertGetId(['code' => 'reviewer', 'name' => 'Old role']);
     $coordinationId = DB::table('coordinations')->insertGetId([
@@ -59,7 +61,7 @@ test('seeding restores predefined names and active flags while preserving IDs an
 
     $this->seed(DatabaseSeeder::class);
 
-    $this->assertDatabaseHas('forces', ['id' => $forceId, 'code' => 'PM', 'name' => 'Policia Militar', 'is_active' => true]);
+    $this->assertDatabaseHas('forces', ['id' => $forceId, 'code' => 'PM', 'name' => 'Old force', 'is_active' => false]);
     $this->assertDatabaseHas('roles', ['id' => $roleId, 'code' => 'reviewer', 'name' => 'Revisor']);
     $this->assertDatabaseHas('coordinations', [
         'id' => $coordinationId, 'code' => 'COTEC', 'name' => 'coordenação tecnica',
