@@ -40,6 +40,8 @@ interface ReportRepositoryInterface
 
     public function findLatestByRootReportId(string $rootReportId): ?ReportEntity;
 
+    public function findReportByMunicipalityId(string $municipalityId): ?array;
+
     /**
      * A implementação deve impedir a sobrescrita de uma versão já gerada, inclusive entre processos.
      */
