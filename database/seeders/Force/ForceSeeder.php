@@ -9,11 +9,13 @@ class ForceSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('forces')->upsert([
+        DB::table('forces')->insertOrIgnore([
             ['code' => 'PM', 'name' => 'Policia Militar', 'is_active' => true],
             ['code' => 'PC', 'name' => 'Policia Civil', 'is_active' => true],
             ['code' => 'BM', 'name' => 'Bombeiro militar', 'is_active' => true],
             ['code' => 'DPT', 'name' => 'Departamento de policia tecnica', 'is_active' => true],
-        ], ['code'], ['name', 'is_active']);
+            ['code' => 'PC-PM', 'name' => 'Conjugada', 'is_active' => true],
+            ['code' => 'SSP', 'name' => 'Secretaria da Segurança Pública', 'is_active' => true],
+        ]);
     }
 }
