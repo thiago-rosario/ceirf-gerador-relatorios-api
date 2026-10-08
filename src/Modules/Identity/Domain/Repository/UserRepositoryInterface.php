@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace src\Modules\Identity\Domain\Repository;
 
+use src\Modules\Identity\Domain\Entity\RoleEntity;
 use src\Modules\Identity\Domain\Entity\UserEntity;
 use src\Modules\Shared\Contract\PaginationInterface;
 
@@ -20,6 +21,11 @@ interface UserRepositoryInterface
     public function findByEmail(string $email): ?UserEntity;
 
     public function findByName(string $name): ?UserEntity;
+
+    /**
+     * @return list<RoleEntity>
+     */
+    public function getRoles(): array;
 
     /**
      * @return array<UserEntity>

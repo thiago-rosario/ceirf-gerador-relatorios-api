@@ -8,6 +8,7 @@ use src\Modules\Identity\Presentation\Http\Controllers\Auth\ResetUserPasswordCon
 use src\Modules\Identity\Presentation\Http\Controllers\User\CreateUserController;
 use src\Modules\Identity\Presentation\Http\Controllers\User\DeactivateUserController;
 use src\Modules\Identity\Presentation\Http\Controllers\User\FindByIdUserController;
+use src\Modules\Identity\Presentation\Http\Controllers\User\GetRolesController;
 use src\Modules\Identity\Presentation\Http\Controllers\User\ListAllUserController;
 use src\Modules\Identity\Presentation\Http\Controllers\User\UpdateUserController;
 use src\Modules\Identity\Presentation\Http\Middleware\EnsurePasswordIsChanged;
@@ -25,6 +26,7 @@ Route::middleware(['auth:api', EnsurePasswordIsChanged::class])->group(function 
     Route::patch('/users/{id}', UpdateUserController::class)->name('users.update');
 
     Route::middleware('can:manage-users')->group(function (): void {
+        Route::get('/roles', GetRolesController::class)->name('roles.list');
         Route::post('/auth/reset-password/{id}', ResetUserPasswordController::class)->name('auth.reset-password');
         Route::post('/users', CreateUserController::class)->name('users.create');
         Route::get('/users', ListAllUserController::class)->name('users.list');

@@ -12,6 +12,7 @@ use src\Modules\Identity\Infra\Repositories\Queries\FindAllUserEloquentRepositor
 use src\Modules\Identity\Infra\Repositories\Queries\FindUserByEmailEloquentRepository;
 use src\Modules\Identity\Infra\Repositories\Queries\FindUserByIdEloquentRepository;
 use src\Modules\Identity\Infra\Repositories\Queries\FindUserByNameEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Queries\GetRolesEloquentRepository;
 use src\Modules\Identity\Infra\Repositories\Queries\PaginateUserEloquentRepository;
 use src\Modules\Identity\Infra\Repositories\UserEloquentRepository;
 use src\Modules\Shared\Contract\PaginationInterface;
@@ -35,6 +36,7 @@ function userEloquentRepositoryContext(): array
         'findAllUserRepository' => Mockery::mock(FindAllUserEloquentRepository::class),
         'paginateUserRepository' => Mockery::mock(PaginateUserEloquentRepository::class),
         'updateUserRepository' => Mockery::mock(UpdateUserEloquentRepository::class),
+        'getRolesRepository' => Mockery::mock(GetRolesEloquentRepository::class),
     ];
 
     return [

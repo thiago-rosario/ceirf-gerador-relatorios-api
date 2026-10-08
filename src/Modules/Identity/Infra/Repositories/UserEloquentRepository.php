@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace src\Modules\Identity\Infra\Repositories;
 
+use src\Modules\Identity\Domain\Entity\RoleEntity;
 use src\Modules\Identity\Domain\Entity\UserEntity;
 use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
 use src\Modules\Identity\Infra\Repositories\Auth\CreateAccessTokenEloquentRepository;
@@ -14,6 +15,7 @@ use src\Modules\Identity\Infra\Repositories\Queries\FindAllUserEloquentRepositor
 use src\Modules\Identity\Infra\Repositories\Queries\FindUserByEmailEloquentRepository;
 use src\Modules\Identity\Infra\Repositories\Queries\FindUserByIdEloquentRepository;
 use src\Modules\Identity\Infra\Repositories\Queries\FindUserByNameEloquentRepository;
+use src\Modules\Identity\Infra\Repositories\Queries\GetRolesEloquentRepository;
 use src\Modules\Identity\Infra\Repositories\Queries\PaginateUserEloquentRepository;
 use src\Modules\Shared\Contract\PaginationInterface;
 
@@ -29,6 +31,7 @@ final readonly class UserEloquentRepository implements UserRepositoryInterface
         private FindAllUserEloquentRepository $findAllUserRepository,
         private PaginateUserEloquentRepository $paginateUserRepository,
         private UpdateUserEloquentRepository $updateUserRepository,
+        private GetRolesEloquentRepository $getRolesRepository,
     ) {}
 
     public function createAccessToken(UserEntity $user): string
@@ -59,6 +62,14 @@ final readonly class UserEloquentRepository implements UserRepositoryInterface
     public function findByName(string $name): ?UserEntity
     {
         return $this->findUserByNameRepository->findByName($name);
+    }
+
+    /**
+     * @return list<RoleEntity>
+     */
+    public function getRoles(): array
+    {
+        return $this->getRolesRepository->getRoles();
     }
 
     /**
