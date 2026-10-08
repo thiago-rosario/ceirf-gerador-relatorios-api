@@ -6,6 +6,7 @@ namespace src\Modules\Report\Infra\Provider;
 
 use Illuminate\Support\ServiceProvider;
 use src\Modules\Report\Application\Interfaces\Adapter\ReportGeneratorAdapterInterface;
+use src\Modules\Report\Application\Interfaces\Adapter\ReportInputAdapterInterface;
 use src\Modules\Report\Application\Interfaces\Adapter\ReportQueryResultAdapterInterface;
 use src\Modules\Report\Application\Interfaces\Mapper\LegacyReportQueryMapperInterface;
 use src\Modules\Report\Application\Interfaces\Mapper\ReportChecklistMapperInterface;
@@ -45,6 +46,7 @@ use src\Modules\Report\Application\Usecase\GetDashboardReportsUsecase;
 use src\Modules\Report\Application\Usecase\UpdateReportUsecase;
 use src\Modules\Report\Domain\Repository\ReportRepositoryInterface;
 use src\Modules\Report\Infra\Adapter\ReportGeneratorAdapter;
+use src\Modules\Report\Infra\Adapter\ReportInputAdapter;
 use src\Modules\Report\Infra\Adapter\ReportQueryResultAdapter;
 use src\Modules\Report\Infra\Mapper\LegacyReportQueryMapper;
 use src\Modules\Report\Infra\Mapper\ReportChecklistMapper;
@@ -54,8 +56,14 @@ use src\Modules\Report\Infra\Service\ReportPersistenceService;
 
 class ReportServiceProvider extends ServiceProvider
 {
+    public function boot(): void
+    {
+        $this->loadViewsFrom(__DIR__.'/../../Presentation/Views', 'report');
+    }
+
     public function register(): void
     {
+        $this->app->bind(ReportInputAdapterInterface::class, ReportInputAdapter::class);
         $this->app->bind(ReportRepositoryInterface::class, ReportEloquentRepository::class);
 
         $this->app->bind(ReportDataMapperServiceInterface::class, ReportDataMapperService::class);

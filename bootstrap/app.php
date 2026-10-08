@@ -11,7 +11,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        api: __DIR__.'/../src/Modules/Identity/Presentation/Routes/api.php',
+        api: [
+            __DIR__.'/../src/Modules/Identity/Presentation/Routes/api.php',
+            __DIR__.'/../src/Modules/Report/Presentation/Routes/api.php',
+        ],
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
