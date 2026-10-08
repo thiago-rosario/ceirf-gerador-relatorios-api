@@ -6,6 +6,8 @@ namespace src\Modules\Report\Domain\Entity;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use src\Modules\Report\Application\Interfaces\Mapper\LegacyReportQueryMapperInterface;
+use src\Modules\Report\Application\Interfaces\Mapper\ReportPersistenceMapperInterface;
 use src\Modules\Report\Domain\Enum\ReportStatusEnum;
 use src\Modules\Report\Domain\Exception\InvalidGeneratedReportException;
 use src\Modules\Report\Domain\Exception\InvalidReportRevisionException;
@@ -23,6 +25,7 @@ use src\Modules\Report\Domain\ValueObject\ReportInfrastructureValueObject;
 use src\Modules\Report\Domain\ValueObject\ReportLocationValueObject;
 use src\Modules\Report\Domain\ValueObject\ReportPhotographicDocumentationValueObject;
 use src\Modules\Report\Domain\ValueObject\ReportPreImplementationValueObject;
+use src\Modules\Report\Model\Report as ReportModel;
 use src\Modules\Shared\Resolver\UuidResolver;
 
 /**
@@ -350,5 +353,17 @@ class ReportEntity
     public function validateForGeneration(): void
     {
         ReportValidation::validateForGeneration($this);
+    }
+
+    public static function fromModel(
+        ReportModel $model,
+        ReportPersistenceMapperInterface $mapper,
+        LegacyReportQueryMapperInterface $legacyMapper,
+    ): self {
+        if ($model->payload === null) {
+            return $legacyMapper->fromModel($model);
+        }
+
+        return $mapper->fromPayload($model->payload);
     }
 }
