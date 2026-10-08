@@ -15,6 +15,7 @@ use src\Modules\Identity\Application\Interfaces\Adapter\AuthenticateUserAdapterI
 use src\Modules\Identity\Application\Interfaces\Adapter\CreateUserDataAdapterInterface;
 use src\Modules\Identity\Application\Interfaces\Adapter\DeactivateUserDataAdapterInterface;
 use src\Modules\Identity\Application\Interfaces\Adapter\FindByIdUserDataAdapterInterface;
+use src\Modules\Identity\Application\Interfaces\Adapter\GetRolesDataAdapterInterface;
 use src\Modules\Identity\Application\Interfaces\Adapter\ListAllUserDataAdapterInterface;
 use src\Modules\Identity\Application\Interfaces\Adapter\LogoutUserDataAdapterInterface;
 use src\Modules\Identity\Application\Interfaces\Adapter\ResetUserPasswordDataAdapterInterface;
@@ -27,6 +28,7 @@ use src\Modules\Identity\Application\Interfaces\Usecase\Auth\ResetUserPasswordUs
 use src\Modules\Identity\Application\Interfaces\Usecase\User\CreateUserUsecaseInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\DeactivateUserUsecaseInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\FindByIdUserUsecaseInterface;
+use src\Modules\Identity\Application\Interfaces\Usecase\User\GetRolesUsecaseInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\ListAllUserUsecaseInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\UpdateUserUsecaseInterface;
 use src\Modules\Identity\Application\Service\UserAuthenticatorService;
@@ -36,6 +38,7 @@ use src\Modules\Identity\Application\Usecase\Auth\ResetUserPasswordUsecase;
 use src\Modules\Identity\Application\Usecase\User\CreateUserUsecase;
 use src\Modules\Identity\Application\Usecase\User\DeactivateUserUsecase;
 use src\Modules\Identity\Application\Usecase\User\FindByIdUserUsecase;
+use src\Modules\Identity\Application\Usecase\User\GetRolesUsecase;
 use src\Modules\Identity\Application\Usecase\User\ListAllUserUsecase;
 use src\Modules\Identity\Application\Usecase\User\UpdateUserUsecase;
 use src\Modules\Identity\Domain\Enum\UserRoleEnum;
@@ -44,6 +47,7 @@ use src\Modules\Identity\Infra\Adapter\AuthenticateUserAdapter;
 use src\Modules\Identity\Infra\Adapter\CreateUserDataAdapter;
 use src\Modules\Identity\Infra\Adapter\DeactivateUserDataAdapter;
 use src\Modules\Identity\Infra\Adapter\FindByIdUserDataAdapter;
+use src\Modules\Identity\Infra\Adapter\GetRolesDataAdapter;
 use src\Modules\Identity\Infra\Adapter\ListAllUserDataAdapter;
 use src\Modules\Identity\Infra\Adapter\LogoutUserDataAdapter;
 use src\Modules\Identity\Infra\Adapter\ResetUserPasswordDataAdapter;
@@ -67,6 +71,7 @@ class IdentityServiceProvider extends ServiceProvider
         $this->app->bind(CreateUserDataAdapterInterface::class, CreateUserDataAdapter::class);
         $this->app->bind(DeactivateUserDataAdapterInterface::class, DeactivateUserDataAdapter::class);
         $this->app->bind(FindByIdUserDataAdapterInterface::class, FindByIdUserDataAdapter::class);
+        $this->app->bind(GetRolesDataAdapterInterface::class, GetRolesDataAdapter::class);
         $this->app->bind(ListAllUserDataAdapterInterface::class, ListAllUserDataAdapter::class);
         $this->app->bind(UpdateUserDataAdapterInterface::class, UpdateUserDataAdapter::class);
         $this->app->bind(AuthenticateUserUsecaseInterface::class, AuthenticateUserUsecase::class);
@@ -76,6 +81,7 @@ class IdentityServiceProvider extends ServiceProvider
         $this->app->bind(CreateUserUsecaseInterface::class, CreateUserUsecase::class);
         $this->app->bind(DeactivateUserUsecaseInterface::class, DeactivateUserUsecase::class);
         $this->app->bind(FindByIdUserUsecaseInterface::class, FindByIdUserUsecase::class);
+        $this->app->bind(GetRolesUsecaseInterface::class, GetRolesUsecase::class);
         $this->app->bind(ListAllUserUsecaseInterface::class, ListAllUserUsecase::class);
         $this->app->bind(UpdateUserUsecaseInterface::class, UpdateUserUsecase::class);
     }
