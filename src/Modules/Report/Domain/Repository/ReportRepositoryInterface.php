@@ -40,6 +40,7 @@ interface ReportRepositoryInterface
 
     public function findLatestByRootReportId(string $rootReportId): ?ReportEntity;
 
+    /** @return array<array-key, mixed>|null */
     public function findReportByMunicipalityId(string $municipalityId): ?array;
 
     /**
