@@ -22,12 +22,7 @@ class EnsurePasswordIsChanged
         $user = $request->user();
 
         if ($user instanceof User && $user->must_change_password) {
-            $isPasswordChange = $request->routeIs('users.update')
-                && $request->route('id') === $user->uuid
-                && $request->filled('password')
-                && $request->except(['password', 'password_confirmation']) === [];
-
-            if (! $request->routeIs('auth.logout') && ! $isPasswordChange) {
+            if (! $request->routeIs('auth.logout', 'auth.change-password')) {
                 return (new ResponseJsend(
                     data: ['must_change_password' => true],
                     status: ResponseJsend::STATUS_ERROR,

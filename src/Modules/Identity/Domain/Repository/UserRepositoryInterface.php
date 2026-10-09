@@ -35,4 +35,6 @@ interface UserRepositoryInterface
     public function paginate(int $page = 1, int $perPage = 10, string $filter = '', string $orderBy = 'DESC'): PaginationInterface;
 
     public function update(UserEntity $user): UserEntity;
+
+    public function changePassword(UserEntity $user, string $previousPasswordHash, string $accessToken): UserEntity;
 }

@@ -42,6 +42,7 @@ class ResetUserPasswordUsecase implements ResetUserPasswordUsecaseInterface
             mustChangePassword: $userToReset->mustChangePassword(),
             createdAt: $userToReset->createdAt(),
             updatedAt: $userToReset->updatedAt(),
+            coordinationId: $userToReset->coordinationId(),
         );
 
         $updatedUser = $this->repository->update($userWithHashedPassword);

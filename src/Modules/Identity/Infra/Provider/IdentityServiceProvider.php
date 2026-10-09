@@ -23,6 +23,7 @@ use src\Modules\Identity\Application\Interfaces\Adapter\UpdateUserDataAdapterInt
 use src\Modules\Identity\Application\Interfaces\Service\PasswordHasherServiceInterface;
 use src\Modules\Identity\Application\Interfaces\Service\UserAuthenticatorServiceInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\Auth\AuthenticateUserUsecaseInterface;
+use src\Modules\Identity\Application\Interfaces\Usecase\Auth\ChangeUserPasswordUsecaseInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\Auth\LogoutUserUsecaseInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\Auth\ResetUserPasswordUsecaseInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\CreateUserUsecaseInterface;
@@ -33,6 +34,7 @@ use src\Modules\Identity\Application\Interfaces\Usecase\User\ListAllUserUsecaseI
 use src\Modules\Identity\Application\Interfaces\Usecase\User\UpdateUserUsecaseInterface;
 use src\Modules\Identity\Application\Service\UserAuthenticatorService;
 use src\Modules\Identity\Application\Usecase\Auth\AuthenticateUserUsecase;
+use src\Modules\Identity\Application\Usecase\Auth\ChangeUserPasswordUsecase;
 use src\Modules\Identity\Application\Usecase\Auth\LogoutUserUsecase;
 use src\Modules\Identity\Application\Usecase\Auth\ResetUserPasswordUsecase;
 use src\Modules\Identity\Application\Usecase\User\CreateUserUsecase;
@@ -75,6 +77,7 @@ class IdentityServiceProvider extends ServiceProvider
         $this->app->bind(ListAllUserDataAdapterInterface::class, ListAllUserDataAdapter::class);
         $this->app->bind(UpdateUserDataAdapterInterface::class, UpdateUserDataAdapter::class);
         $this->app->bind(AuthenticateUserUsecaseInterface::class, AuthenticateUserUsecase::class);
+        $this->app->bind(ChangeUserPasswordUsecaseInterface::class, ChangeUserPasswordUsecase::class);
         $this->app->bind(LogoutUserUsecaseInterface::class, LogoutUserUsecase::class);
         $this->app->bind(ResetUserPasswordUsecaseInterface::class, ResetUserPasswordUsecase::class);
 
@@ -108,5 +111,9 @@ class IdentityServiceProvider extends ServiceProvider
 
             return Limit::perMinute(5)->by($normalizedEmail.'|'.$request->ip());
         });
+
+        RateLimiter::for('auth-change-password', fn (Request $request): Limit => Limit::perMinute(5)->by(
+            ($request->user()?->getAuthIdentifier() ?? '').'|'.$request->ip(),
+        ));
     }
 }

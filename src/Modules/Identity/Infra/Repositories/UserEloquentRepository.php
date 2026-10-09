@@ -89,4 +89,9 @@ final readonly class UserEloquentRepository implements UserRepositoryInterface
     {
         return $this->updateUserRepository->update($user);
     }
+
+    public function changePassword(UserEntity $user, string $previousPasswordHash, string $accessToken): UserEntity
+    {
+        return $this->updateUserRepository->changePassword($user, $previousPasswordHash, $accessToken);
+    }
 }
