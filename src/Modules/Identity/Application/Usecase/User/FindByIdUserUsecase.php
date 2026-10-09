@@ -12,7 +12,7 @@ use src\Modules\Identity\Application\Interfaces\Usecase\User\FindByIdUserUsecase
 use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
 use src\Modules\Identity\Domain\Validation\UserValidation;
 use src\Modules\Identity\Domain\ValueObject\EmailValueObject;
-use src\Modules\Organization\Application\DTO\Coordination\CoordinationDataDTO;
+use src\Modules\Organization\Application\DTO\CoordinationDataDTO;
 use src\Modules\Organization\Domain\Repository\CoordinationRepositoryInterface;
 use src\Modules\Shared\Resolver\UuidResolver;
 

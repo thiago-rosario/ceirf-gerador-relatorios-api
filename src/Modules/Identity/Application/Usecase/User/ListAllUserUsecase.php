@@ -9,7 +9,7 @@ use src\Modules\Identity\Application\DTO\User\ListAllUserInputDTO;
 use src\Modules\Identity\Application\DTO\User\ListAllUserOutputDTO;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\ListAllUserUsecaseInterface;
 use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
-use src\Modules\Organization\Application\DTO\Coordination\CoordinationDataDTO;
+use src\Modules\Organization\Application\DTO\CoordinationDataDTO;
 use src\Modules\Organization\Domain\Repository\CoordinationRepositoryInterface;
 
 class ListAllUserUsecase implements ListAllUserUsecaseInterface

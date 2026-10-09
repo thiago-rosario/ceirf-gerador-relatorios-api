@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace src\Modules\Organization\Infra\Adapter;
 
-use src\Modules\Organization\Application\DTO\Coordination\CoordinationDataDTO;
-use src\Modules\Organization\Application\DTO\Coordination\GetCoordinationsOutputDTO;
+use src\Modules\Organization\Application\DTO\CoordinationDataDTO;
+use src\Modules\Organization\Application\DTO\GetCoordinationsOutputDTO;
 use src\Modules\Organization\Application\Interfaces\Adapter\GetCoordinationsDataAdapterInterface;
 
 class GetCoordinationsDataAdapter implements GetCoordinationsDataAdapterInterface

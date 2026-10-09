@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace src\Modules\Organization\Application\DTO\Coordination;
+namespace src\Modules\Organization\Application\DTO;
 
 readonly class GetCoordinationsOutputDTO
 {

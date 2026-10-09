@@ -6,8 +6,8 @@ namespace src\Modules\Organization\Infra\Provider;
 
 use Illuminate\Support\ServiceProvider;
 use src\Modules\Organization\Application\Interfaces\Adapter\GetCoordinationsDataAdapterInterface;
-use src\Modules\Organization\Application\Interfaces\Usecase\Coordination\GetCoordinationsUsecaseInterface;
-use src\Modules\Organization\Application\Usecase\Coordination\GetCoordinationsUsecase;
+use src\Modules\Organization\Application\Interfaces\Usecase\GetCoordinationsUsecaseInterface;
+use src\Modules\Organization\Application\Usecase\GetCoordinationsUsecase;
 use src\Modules\Organization\Domain\Repository\CoordinationRepositoryInterface;
 use src\Modules\Organization\Infra\Adapter\GetCoordinationsDataAdapter;
 use src\Modules\Organization\Infra\Repositories\CoordinationDatabaseRepository;

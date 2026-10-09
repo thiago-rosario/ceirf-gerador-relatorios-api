@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace src\Modules\Organization\Presentation\Http\Controllers\Coordination;
+namespace src\Modules\Organization\Presentation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use src\Modules\Organization\Application\Interfaces\Adapter\GetCoordinationsDataAdapterInterface;
-use src\Modules\Organization\Application\Interfaces\Usecase\Coordination\GetCoordinationsUsecaseInterface;
+use src\Modules\Organization\Application\Interfaces\Usecase\GetCoordinationsUsecaseInterface;
 use src\Modules\Shared\Helper\ResponseJsend;
 use Throwable;
 

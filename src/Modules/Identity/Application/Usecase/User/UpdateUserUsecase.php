@@ -12,7 +12,7 @@ use src\Modules\Identity\Application\Interfaces\Usecase\User\UpdateUserUsecaseIn
 use src\Modules\Identity\Domain\Enum\UserRoleEnum;
 use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
 use src\Modules\Identity\Domain\Validation\UserValidation;
-use src\Modules\Organization\Application\DTO\Coordination\CoordinationDataDTO;
+use src\Modules\Organization\Application\DTO\CoordinationDataDTO;
 use src\Modules\Organization\Domain\Repository\CoordinationRepositoryInterface;
 
 class UpdateUserUsecase implements UpdateUserUsecaseInterface
