@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Exceptions;
 use Mockery\MockInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\GetRolesUsecaseInterface;
+use src\Modules\Identity\Domain\Enum\UserRoleEnum;
 use src\Modules\Identity\Model\Role;
 use src\Modules\Identity\Model\User;
 use src\Modules\Organization\Application\Interfaces\Usecase\GetCoordinationsUsecaseInterface;
+
 use function Pest\Laravel\mock;
 
 function userRegistrationAccessToken(User $user): string
@@ -84,15 +86,15 @@ describe('roles listing', function (): void {
 });
 
 describe('coordinations listing', function (): void {
-    test('returns only active coordinations ordered by name and identifier with the dropdown fields', function (): void {
+    test('returns every active coordination ordered by name and identifier regardless of role or membership', function (UserRoleEnum $role, ?int $coordinationId): void {
         DB::table('coordinations')->insert([
             ['id' => 40, 'code' => 'ZULU', 'name' => 'Coordenação Z', 'is_active' => true, 'description' => 'Internal description'],
             ['id' => 30, 'code' => 'ALPHA2', 'name' => 'Coordenação A', 'is_active' => true, 'description' => null],
             ['id' => 20, 'code' => 'ALPHA1', 'name' => 'Coordenação A', 'is_active' => true, 'description' => null],
             ['id' => 10, 'code' => 'INACTIVE', 'name' => 'Coordenação 0', 'is_active' => false, 'description' => null],
         ]);
-        $administrator = User::factory()->superuser()->create();
-        $accessToken = userRegistrationAccessToken($administrator);
+        $user = User::factory()->withRole($role)->create(['coordination_id' => $coordinationId]);
+        $accessToken = userRegistrationAccessToken($user);
 
         $response = $this->withToken($accessToken)->getJson('/api/coordinations');
 
@@ -106,7 +108,15 @@ describe('coordinations listing', function (): void {
                 ],
             ],
         ]);
-    });
+    })->with([
+        'operator with its own coordination' => [UserRoleEnum::OPERATOR, 20],
+        'reviewer with its own coordination' => [UserRoleEnum::REVIEWER, 30],
+        'viewer with a coordination' => [UserRoleEnum::VIEWER, 40],
+        'viewer without a coordination' => [UserRoleEnum::VIEWER, null],
+        'superuser without a coordination' => [UserRoleEnum::SUPERUSER, null],
+        'legacy operator without a coordination' => [UserRoleEnum::OPERATOR, null],
+        'legacy reviewer without a coordination' => [UserRoleEnum::REVIEWER, null],
+    ]);
 
     test('returns an empty successful list when no active coordinations are available', function (): void {
         DB::table('coordinations')->insert([
@@ -136,26 +146,47 @@ describe('user registration dropdown access', function (): void {
             ->assertJsonPath('message', 'Não autenticado.');
     })->with('user registration dropdown endpoints');
 
-    test('returns 403 when an operator requests user registration options', function (string $uri): void {
-        $operator = User::factory()->create();
-        $accessToken = userRegistrationAccessToken($operator);
+    test('returns 401 when the bearer token belongs to an inactive user', function (string $uri): void {
+        $administrator = User::factory()->superuser()->create();
+        $accessToken = userRegistrationAccessToken($administrator);
+        $administrator->update(['is_active' => false]);
+        Auth::forgetGuards();
 
         $response = $this->withToken($accessToken)->getJson($uri);
 
-        $response->assertForbidden()->assertJsonPath('status', 'error')
-            ->assertJsonPath('message', 'Acesso não autorizado.');
+        $response->assertUnauthorized()->assertJsonPath('status', 'error')
+            ->assertJsonPath('message', 'Não autenticado.');
     })->with('user registration dropdown endpoints');
 
-    test('returns 403 when an administrator must change the password', function (string $uri): void {
-        $administrator = User::factory()->superuser()->mustChangePassword()->create();
-        $accessToken = userRegistrationAccessToken($administrator);
+    test('returns 403 when a non-administrator requests roles', function (UserRoleEnum $role): void {
+        $user = User::factory()->withRole($role)->create();
+        $accessToken = userRegistrationAccessToken($user);
+
+        $response = $this->withToken($accessToken)->getJson('/api/roles');
+
+        $response->assertForbidden()->assertJsonPath('status', 'error')
+            ->assertJsonPath('message', 'Acesso não autorizado.');
+    })->with([
+        'operator' => [UserRoleEnum::OPERATOR],
+        'reviewer' => [UserRoleEnum::REVIEWER],
+        'viewer' => [UserRoleEnum::VIEWER],
+    ]);
+
+    test('returns 403 when an authenticated user must change the password', function (string $uri, UserRoleEnum $role): void {
+        $user = User::factory()->withRole($role)->mustChangePassword()->create();
+        $accessToken = userRegistrationAccessToken($user);
 
         $response = $this->withToken($accessToken)->getJson($uri);
 
         $response->assertForbidden()->assertJsonPath('status', 'error')
             ->assertJsonPath('data.must_change_password', true)
             ->assertJsonPath('message', 'É necessário alterar a senha antes de continuar.');
-    })->with('user registration dropdown endpoints');
+    })->with('user registration dropdown endpoints')->with([
+        'operator' => [UserRoleEnum::OPERATOR],
+        'reviewer' => [UserRoleEnum::REVIEWER],
+        'viewer' => [UserRoleEnum::VIEWER],
+        'superuser' => [UserRoleEnum::SUPERUSER],
+    ]);
 
     test('returns 500 and reports the original exception when listing unexpectedly fails', function (string $uri, string $usecaseInterface): void {
         $administrator = User::factory()->superuser()->create();
