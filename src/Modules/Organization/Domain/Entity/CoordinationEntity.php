@@ -10,6 +10,7 @@ class CoordinationEntity
         private int $id,
         private string $code,
         private string $name,
+        private bool $isActive = true,
     ) {}
 
     public function id(): int
@@ -25,5 +26,10 @@ class CoordinationEntity
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
     }
 }

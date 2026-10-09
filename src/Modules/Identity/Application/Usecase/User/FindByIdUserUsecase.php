@@ -12,12 +12,15 @@ use src\Modules\Identity\Application\Interfaces\Usecase\User\FindByIdUserUsecase
 use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
 use src\Modules\Identity\Domain\Validation\UserValidation;
 use src\Modules\Identity\Domain\ValueObject\EmailValueObject;
+use src\Modules\Organization\Application\DTO\CoordinationDataDTO;
+use src\Modules\Organization\Domain\Repository\CoordinationRepositoryInterface;
 use src\Modules\Shared\Resolver\UuidResolver;
 
 class FindByIdUserUsecase implements FindByIdUserUsecaseInterface
 {
     public function __construct(
         private readonly UserRepositoryInterface $repository,
+        private readonly CoordinationRepositoryInterface $coordinationRepository,
     ) {}
 
     public function __invoke(FindByIdUserInputDTO $input): FindByIdUserOutputDTO
@@ -53,6 +56,8 @@ class FindByIdUserUsecase implements FindByIdUserUsecaseInterface
             throw new UserNotFoundException;
         }
 
+        $coordination = $user->coordinationId() === null ? null : $this->coordinationRepository->findById($user->coordinationId());
+
         return new FindByIdUserOutputDTO(
             id: $user->id()->value(),
             name: $user->name(),
@@ -61,6 +66,12 @@ class FindByIdUserUsecase implements FindByIdUserUsecaseInterface
             isActive: $user->isActive(),
             createdAt: $user->createdAt(),
             mustChangePassword: $user->mustChangePassword(),
+            coordinationId: $user->coordinationId(),
+            coordination: $coordination === null ? null : new CoordinationDataDTO(
+                id: $coordination->id(),
+                code: $coordination->code(),
+                name: $coordination->name(),
+            ),
         );
     }
 }

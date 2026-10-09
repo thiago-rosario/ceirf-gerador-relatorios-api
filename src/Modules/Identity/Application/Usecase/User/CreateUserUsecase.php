@@ -11,23 +11,31 @@ use src\Modules\Identity\Application\Interfaces\Usecase\User\CreateUserUsecaseIn
 use src\Modules\Identity\Domain\Entity\UserEntity;
 use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
 use src\Modules\Identity\Domain\Validation\UserValidation;
+use src\Modules\Organization\Application\DTO\CoordinationDataDTO;
+use src\Modules\Organization\Domain\Repository\CoordinationRepositoryInterface;
 
 class CreateUserUsecase implements CreateUserUsecaseInterface
 {
     public function __construct(
         private readonly UserRepositoryInterface $repository,
         private readonly PasswordHasherServiceInterface $hasher,
+        private readonly CoordinationRepositoryInterface $coordinationRepository,
     ) {}
 
     public function __invoke(CreateUserInputDTO $input): CreateUserOutputDTO
     {
         UserValidation::validatePassword($input->password);
 
+        $coordination = $input->coordinationId === null ? null : $this->coordinationRepository->findById($input->coordinationId);
+
+        UserValidation::validateCoordination($input->role, $input->coordinationId, $coordination);
+
         $user = new UserEntity(
             name: $input->name,
             email: $input->email,
             password: $this->hasher->hash($input->password),
             role: $input->role,
+            coordinationId: $input->coordinationId,
         );
 
         $userCreated = $this->repository->insert($user);
@@ -39,6 +47,12 @@ class CreateUserUsecase implements CreateUserUsecaseInterface
             role: $userCreated->role()->value,
             isActive: $userCreated->isActive(),
             createdAt: $userCreated->createdAt(),
+            coordinationId: $userCreated->coordinationId(),
+            coordination: $coordination === null ? null : new CoordinationDataDTO(
+                id: $coordination->id(),
+                code: $coordination->code(),
+                name: $coordination->name(),
+            ),
         );
     }
 }

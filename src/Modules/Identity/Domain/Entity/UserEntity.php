@@ -43,6 +43,7 @@ class UserEntity
         private bool $mustChangePassword = false,
         DateTimeInterface|string|null $createdAt = null,
         DateTimeInterface|string|null $updatedAt = null,
+        private ?int $coordinationId = null,
     ) {
         $this->id = $this->resolveUuid($id);
         $this->name = trim($name);
@@ -85,6 +86,11 @@ class UserEntity
     public function mustChangePassword(): bool
     {
         return $this->mustChangePassword;
+    }
+
+    public function coordinationId(): ?int
+    {
+        return $this->coordinationId;
     }
 
     public function createdAt(): DateTimeImmutable
@@ -149,6 +155,14 @@ class UserEntity
         $this->touch();
     }
 
+    public function changeCoordination(?int $coordinationId): void
+    {
+        UserValidation::validateCoordinationId($coordinationId);
+
+        $this->coordinationId = $coordinationId;
+        $this->touch();
+    }
+
     /**
      * Redefine a senha para o valor padrão e exige uma troca posterior pelo usuário.
      */
@@ -193,6 +207,7 @@ class UserEntity
             mustChangePassword: $model->must_change_password,
             createdAt: $model->created_at,
             updatedAt: $model->updated_at,
+            coordinationId: $model->coordination_id,
         );
     }
 }

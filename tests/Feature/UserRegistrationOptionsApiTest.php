@@ -10,8 +10,7 @@ use Mockery\MockInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\GetRolesUsecaseInterface;
 use src\Modules\Identity\Model\Role;
 use src\Modules\Identity\Model\User;
-use src\Modules\Organization\Application\Interfaces\Usecase\Coordination\GetCoordinationsUsecaseInterface;
-
+use src\Modules\Organization\Application\Interfaces\Usecase\GetCoordinationsUsecaseInterface;
 use function Pest\Laravel\mock;
 
 function userRegistrationAccessToken(User $user): string

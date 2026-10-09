@@ -13,5 +13,6 @@ readonly class CreateUserInputDTO
         public string $email,
         public string $password,
         public UserRoleEnum $role = UserRoleEnum::OPERATOR,
+        public ?int $coordinationId = null,
     ) {}
 }

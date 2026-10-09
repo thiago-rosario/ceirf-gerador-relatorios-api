@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace src\Modules\Organization\Application\Interfaces\Adapter;
 
-use src\Modules\Organization\Application\DTO\Coordination\GetCoordinationsOutputDTO;
+use src\Modules\Organization\Application\DTO\GetCoordinationsOutputDTO;
 
 interface GetCoordinationsDataAdapterInterface
 {

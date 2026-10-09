@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use src\Modules\Identity\Application\Interfaces\Adapter\CreateUserDataAdapterInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\CreateUserUsecaseInterface;
 use src\Modules\Identity\Domain\Exception\InvalidEmailException;
+use src\Modules\Identity\Domain\Exception\InvalidUserCoordinationException;
 use src\Modules\Identity\Domain\Exception\UserNameCannotBeEmptyException;
 use src\Modules\Identity\Domain\Exception\UserPasswordCannotBeEmptyException;
 use src\Modules\Identity\Presentation\Http\Requests\User\CreateUserRequest;
@@ -33,6 +34,14 @@ class CreateUserController extends Controller
             $response = new ResponseJsend($this->adapter->toArray($result));
 
             return $response->toJsonResponse(201);
+        } catch (InvalidUserCoordinationException $e) {
+            $response = new ResponseJsend(
+                status: 'error',
+                message: $e->getMessage(),
+                code: $e->getCode(),
+            );
+
+            return response()->json($response->toArray() + ['errors' => ['coordination_id' => [$e->getMessage()]]], 422);
         } catch (InvalidEmailException|UserNameCannotBeEmptyException|UserPasswordCannotBeEmptyException $e) {
             $response = new ResponseJsend(
                 status: 'error',

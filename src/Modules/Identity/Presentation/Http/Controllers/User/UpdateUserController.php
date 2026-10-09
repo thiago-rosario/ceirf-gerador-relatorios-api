@@ -13,6 +13,7 @@ use src\Modules\Identity\Application\Exception\UserNotFoundException;
 use src\Modules\Identity\Application\Interfaces\Adapter\UpdateUserDataAdapterInterface;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\UpdateUserUsecaseInterface;
 use src\Modules\Identity\Domain\Exception\InvalidEmailException;
+use src\Modules\Identity\Domain\Exception\InvalidUserCoordinationException;
 use src\Modules\Identity\Domain\Exception\InvalidUserIdException;
 use src\Modules\Identity\Domain\Exception\UserNameCannotBeEmptyException;
 use src\Modules\Identity\Domain\Exception\UserPasswordCannotBeEmptyException;
@@ -45,6 +46,14 @@ class UpdateUserController extends Controller
             );
 
             return $response->toJsonResponse(404);
+        } catch (InvalidUserCoordinationException $e) {
+            $response = new ResponseJsend(
+                status: 'error',
+                message: $e->getMessage(),
+                code: $e->getCode(),
+            );
+
+            return response()->json($response->toArray() + ['errors' => ['coordination_id' => [$e->getMessage()]]], 422);
         } catch (InvalidEmailException|InvalidUserIdException|UserNameCannotBeEmptyException|UserPasswordCannotBeEmptyException $e) {
             $response = new ResponseJsend(
                 status: 'error',

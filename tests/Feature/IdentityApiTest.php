@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Illuminate\Cache\RateLimiter as CacheRateLimiter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
@@ -221,7 +222,7 @@ describe('authentication', function (): void {
             ->assertJsonPath('data.user.must_change_password', false)
             ->assertExactJsonStructure([
                 'status',
-                'data' => ['user' => ['id', 'name', 'email', 'role', 'is_active', 'created_at', 'must_change_password']],
+                'data' => ['user' => ['id', 'name', 'email', 'role', 'is_active', 'created_at', 'must_change_password', 'coordination_id', 'coordination']],
             ]);
         $this->assertDatabaseCount('user_access_tokens', 1);
     })->with(UserRoleEnum::cases());
@@ -290,6 +291,7 @@ describe('user administration', function (): void {
             'email' => ' ANA@example.com ',
             'password' => 'new-password',
             'role' => UserRoleEnum::REVIEWER->value,
+            'coordination_id' => DB::table('coordinations')->insertGetId(['code' => 'COTEC', 'name' => 'Coordenação técnica']),
             'is_active' => false,
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
         ]);
@@ -302,7 +304,7 @@ describe('user administration', function (): void {
             ->assertJsonPath('data.is_active', true)
             ->assertExactJsonStructure([
                 'status',
-                'data' => ['id', 'name', 'email', 'role', 'is_active', 'created_at'],
+                'data' => ['id', 'name', 'email', 'role', 'is_active', 'created_at', 'coordination_id', 'coordination' => ['id', 'code', 'name']],
             ]);
         $createdUser = User::query()->where('email', 'ana@example.com')->firstOrFail();
         expect(Str::isUuid($response->json('data.id')))->toBeTrue();
@@ -323,6 +325,7 @@ describe('user administration', function (): void {
             'name' => 'Ana Silva',
             'email' => 'ana@example.com',
             'password' => $literalPassword,
+            'coordination_id' => DB::table('coordinations')->insertGetId(['code' => 'COTEC', 'name' => 'Coordenação técnica']),
         ]);
 
         $response->assertCreated()->assertJsonPath('data.email', 'ana@example.com');
@@ -410,7 +413,7 @@ describe('user administration', function (): void {
             ->assertJsonPath('data.email', $user->email)
             ->assertExactJsonStructure([
                 'status',
-                'data' => ['id', 'name', 'email', 'role', 'is_active', 'created_at', 'must_change_password'],
+                'data' => ['id', 'name', 'email', 'role', 'is_active', 'created_at', 'must_change_password', 'coordination_id', 'coordination'],
             ]);
     });
 
