@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use src\Modules\Identity\Presentation\Http\Controllers\Auth\AuthenticateUserController;
+use src\Modules\Identity\Presentation\Http\Controllers\Auth\ChangeUserPasswordController;
 use src\Modules\Identity\Presentation\Http\Controllers\Auth\CurrentUserController;
 use src\Modules\Identity\Presentation\Http\Controllers\Auth\LogoutUserController;
 use src\Modules\Identity\Presentation\Http\Controllers\Auth\ResetUserPasswordController;
@@ -23,6 +24,9 @@ Route::get('/auth/me', CurrentUserController::class)
 
 Route::middleware(['auth:api', EnsurePasswordIsChanged::class])->group(function (): void {
     Route::post('/auth/logout', LogoutUserController::class)->name('auth.logout');
+    Route::post('/auth/change-password', ChangeUserPasswordController::class)
+        ->middleware('throttle:auth-change-password')
+        ->name('auth.change-password');
     Route::patch('/users/{id}', UpdateUserController::class)->name('users.update');
 
     Route::middleware('can:manage-users')->group(function (): void {

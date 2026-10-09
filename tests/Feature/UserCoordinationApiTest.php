@@ -433,9 +433,11 @@ describe('legacy users and coordination persistence', function (): void {
         $user = User::factory()->withRole($role)->mustChangePassword()->create();
         $accessToken = userCoordinationAccessToken($user);
 
-        $response = $this->withToken($accessToken)->patchJson('/api/users/'.$user->uuid, ['password' => 'changed-password']);
+        $response = $this->withToken($accessToken)->postJson('/api/auth/change-password', [
+            'current_password' => 'password', 'password' => 'changed-password', 'password_confirmation' => 'changed-password',
+        ]);
 
-        $response->assertOk()->assertJsonPath('data.coordination_id', null)->assertJsonPath('data.coordination', null);
+        $response->assertOk()->assertJsonPath('data.user.coordination_id', null)->assertJsonPath('data.user.coordination', null);
         $this->assertDatabaseHas('users', ['id' => $user->id, 'coordination_id' => null, 'must_change_password' => false]);
         expect(Hash::check('changed-password', $user->refresh()->password))->toBeTrue();
     })->with(['operator' => [UserRoleEnum::OPERATOR], 'reviewer' => [UserRoleEnum::REVIEWER]]);

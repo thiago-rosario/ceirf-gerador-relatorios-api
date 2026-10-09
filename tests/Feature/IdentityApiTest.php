@@ -196,6 +196,7 @@ describe('authentication', function (): void {
         'update user' => ['PATCH', '/api/users/550e8400-e29b-41d4-a716-446655440000'],
         'deactivate user' => ['PATCH', '/api/users/550e8400-e29b-41d4-a716-446655440000/deactivate'],
         'reset password' => ['POST', '/api/auth/reset-password/550e8400-e29b-41d4-a716-446655440000'],
+        'change password' => ['POST', '/api/auth/change-password'],
         'logout' => ['POST', '/api/auth/logout'],
         'current user' => ['GET', '/api/auth/me'],
     ]);
@@ -559,8 +560,8 @@ describe('user administration', function (): void {
         expect($user->refresh()->email)->toBe('ana@example.com');
     });
 
-    test('a user changes only their own password and clears the required-change flag', function (): void {
-        $user = User::factory()->mustChangePassword()->create();
+    test('a user without a required change can update only their own password', function (): void {
+        $user = User::factory()->create();
         $accessToken = identityAccessToken($user);
 
         $response = $this->withToken($accessToken)->patchJson('/api/users/'.$user->uuid, ['password' => 'changed-password']);
