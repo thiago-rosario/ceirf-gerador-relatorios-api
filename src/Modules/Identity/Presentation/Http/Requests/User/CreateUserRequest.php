@@ -26,7 +26,7 @@ class CreateUserRequest extends FormRequest
     }
 
     /**
-     * @return ($key is null ? array{name: string, email: string, password: string, role?: string} : mixed)
+     * @return ($key is null ? array{name: string, email: string, password: string, role?: string, coordination_id?: int|null} : mixed)
      */
     public function validated(mixed $key = null, mixed $default = null): mixed
     {
@@ -43,6 +43,7 @@ class CreateUserRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:150', Rule::unique('users', 'email')],
             'password' => ['required', 'string'],
             'role' => ['sometimes', 'string', Rule::enum(UserRoleEnum::class)],
+            'coordination_id' => ['sometimes', 'nullable', 'integer:strict', 'min:1'],
         ];
     }
 }

@@ -21,6 +21,7 @@ class CreateUserEloquentRepository
                 'password' => $user->password(),
                 'is_active' => $user->isActive(),
                 'must_change_password' => $user->mustChangePassword(),
+                'coordination_id' => $user->coordinationId(),
                 'created_at' => $user->createdAt(),
                 'updated_at' => $user->updatedAt(),
             ]);

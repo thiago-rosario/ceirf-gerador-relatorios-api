@@ -22,6 +22,7 @@ use src\Modules\Identity\Domain\Enum\UserRoleEnum;
  * @property string $password
  * @property bool $is_active
  * @property bool $must_change_password
+ * @property int|null $coordination_id
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable|null $updated_at
  * @property-read UserRoleEnum $role
@@ -42,6 +43,7 @@ class User extends Authenticatable
         'password',
         'is_active',
         'must_change_password',
+        'coordination_id',
         'created_at',
         'updated_at',
     ];
@@ -102,6 +104,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'must_change_password' => 'boolean',
+            'coordination_id' => 'integer',
             'created_at' => 'immutable_datetime',
             'updated_at' => 'immutable_datetime',
         ];

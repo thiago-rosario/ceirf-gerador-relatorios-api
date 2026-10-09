@@ -27,7 +27,7 @@ class UpdateUserRequest extends FormRequest
 
         return $user->uuid === $this->route('id')
             && $this->has('password')
-            && ! $this->hasAny(['name', 'email', 'role']);
+            && ! $this->hasAny(['name', 'email', 'role', 'coordination_id']);
     }
 
     protected function prepareForValidation(): void
@@ -42,7 +42,7 @@ class UpdateUserRequest extends FormRequest
     }
 
     /**
-     * @return ($key is null ? array{id: string, name?: string, email?: string, password?: string, role?: string} : mixed)
+     * @return ($key is null ? array{id: string, name?: string, email?: string, password?: string, role?: string, coordination_id?: int|null} : mixed)
      */
     public function validated(mixed $key = null, mixed $default = null): mixed
     {
@@ -54,18 +54,21 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $coordinationProvided = $this->has('coordination_id');
+
         return [
             'id' => ['required', 'uuid'],
-            'name' => ['required_without_all:email,password,role', 'string', 'max:100'],
+            'name' => [$coordinationProvided ? 'sometimes' : 'required_without_all:email,password,role', 'string', 'max:100'],
             'email' => [
-                'required_without_all:name,password,role',
+                $coordinationProvided ? 'sometimes' : 'required_without_all:name,password,role',
                 'string',
                 'email',
                 'max:150',
                 Rule::unique('users', 'email')->ignore($this->route('id'), 'uuid'),
             ],
-            'password' => ['required_without_all:name,email,role', 'string'],
-            'role' => ['required_without_all:name,email,password', 'string', Rule::enum(UserRoleEnum::class)],
+            'password' => [$coordinationProvided ? 'sometimes' : 'required_without_all:name,email,role', 'string'],
+            'role' => [$coordinationProvided ? 'sometimes' : 'required_without_all:name,email,password', 'string', Rule::enum(UserRoleEnum::class)],
+            'coordination_id' => ['sometimes', 'nullable', 'integer:strict', 'min:1'],
         ];
     }
 }

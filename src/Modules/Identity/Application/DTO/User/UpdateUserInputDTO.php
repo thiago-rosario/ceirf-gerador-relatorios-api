@@ -14,5 +14,7 @@ readonly class UpdateUserInputDTO
         public ?string $email = null,
         public ?string $password = null,
         public ?UserRoleEnum $role = null,
+        public ?int $coordinationId = null,
+        public bool $coordinationIdProvided = false,
     ) {}
 }

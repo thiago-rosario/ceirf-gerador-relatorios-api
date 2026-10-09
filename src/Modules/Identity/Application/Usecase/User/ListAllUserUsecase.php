@@ -9,16 +9,29 @@ use src\Modules\Identity\Application\DTO\User\ListAllUserInputDTO;
 use src\Modules\Identity\Application\DTO\User\ListAllUserOutputDTO;
 use src\Modules\Identity\Application\Interfaces\Usecase\User\ListAllUserUsecaseInterface;
 use src\Modules\Identity\Domain\Repository\UserRepositoryInterface;
+use src\Modules\Organization\Application\DTO\Coordination\CoordinationDataDTO;
+use src\Modules\Organization\Domain\Repository\CoordinationRepositoryInterface;
 
 class ListAllUserUsecase implements ListAllUserUsecaseInterface
 {
     public function __construct(
         private readonly UserRepositoryInterface $repository,
+        private readonly CoordinationRepositoryInterface $coordinationRepository,
     ) {}
 
     public function __invoke(ListAllUserInputDTO $input): ListAllUserOutputDTO
     {
         $users = $this->repository->findAll($input->filter, $input->orderBy);
+
+        $coordinations = [];
+
+        foreach ($this->coordinationRepository->findAll(activeOnly: false) as $coordination) {
+            $coordinations[$coordination->id()] = new CoordinationDataDTO(
+                id: $coordination->id(),
+                code: $coordination->code(),
+                name: $coordination->name(),
+            );
+        }
 
         $usersData = [];
 
@@ -31,6 +44,8 @@ class ListAllUserUsecase implements ListAllUserUsecaseInterface
                 isActive: $user->isActive(),
                 createdAt: $user->createdAt(),
                 mustChangePassword: $user->mustChangePassword(),
+                coordinationId: $user->coordinationId(),
+                coordination: $user->coordinationId() === null ? null : ($coordinations[$user->coordinationId()] ?? null),
             );
         }
 

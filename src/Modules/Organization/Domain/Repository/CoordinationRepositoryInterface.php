@@ -11,5 +11,7 @@ interface CoordinationRepositoryInterface
     /**
      * @return list<CoordinationEntity>
      */
-    public function findAll(): array;
+    public function findAll(bool $activeOnly = true): array;
+
+    public function findById(int $id): ?CoordinationEntity;
 }

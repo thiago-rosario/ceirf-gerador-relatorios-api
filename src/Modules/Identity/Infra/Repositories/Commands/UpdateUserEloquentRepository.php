@@ -23,6 +23,7 @@ class UpdateUserEloquentRepository
                 'password' => $user->password(),
                 'is_active' => $user->isActive(),
                 'must_change_password' => $user->mustChangePassword(),
+                'coordination_id' => $user->coordinationId(),
                 'updated_at' => $user->updatedAt(),
             ]);
 

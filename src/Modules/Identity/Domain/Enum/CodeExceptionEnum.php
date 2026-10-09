@@ -13,4 +13,6 @@ enum CodeExceptionEnum: int
     case INVALID_USER_ID = 1003;
 
     case INVALID_EMAIL = 1004;
+
+    case INVALID_USER_COORDINATION = 1005;
 }
